@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "147717005049",
+    "project_id": "ecoplant-4811a",
+    "storage_bucket": "ecoplant-4811a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147717005049:android:f15b89ae16b456dc0e8c28",
+        "android_client_info": {
+          "package_name": "fr.umontpellier.ecoplant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByOs5mhdw0GcDzvvvZf_heKfKEVzlD_D4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
