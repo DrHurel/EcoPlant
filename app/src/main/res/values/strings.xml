@@ -2,4 +2,12 @@
     <string name="app_name">EcoPlant</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="homepage_title">EcoPlant</string>
+    <string name="scanner_button">Scanner Button</string>
+    <string name="settings_button">Settings</string>
+    <string name="my_parcels_button">My Parcels</string>
+    <string name="map_button">Map</string>
+    <string name="history_button">History</string>
+    <string name="search_button">Search</string>
+    <string name="join_communities">Join communities</string>
 </resources>

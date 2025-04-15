@@ -1,6 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/olive_color">
+
+    <!-- Image en arrière-plan -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:scaleType="center"
+        android:src="@drawable/background_leaf" />
+
+    <!-- Contenu principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Entête -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="25dp"
+            android:layout_marginHorizontal="10dp"
+            >
+            <!-- My Parcels -->
+            <ImageButton
+                android:id="@+id/my_parcels_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/my_parcels_button"
+                android:src="@drawable/watering_plants_1"
+                android:background="@drawable/gradient_background"
+                />
+            <!-- Map -->
+            <ImageButton
+                android:id="@+id/map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/map_button"
+                android:src="@drawable/map"
+                android:background="@drawable/gradient_background"
+                />
+            <!-- History -->
+            <ImageButton
+                android:id="@+id/history_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+
+                android:contentDescription="@string/history_button"
+                android:src="@drawable/book_open"
+                android:background="@drawable/gradient_background"
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <!-- Settings -->
+            <ImageButton
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:contentDescription="@string/settings_button"
+                android:src="@drawable/gear_svgrepo_com"
+                android:background="@drawable/gradient_background"
+                />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/homepage_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
+            android:paddingVertical="15dp"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/beige_color"
+            android:gravity="center"
+            android:text="@string/homepage_title"
+            android:textColor="@color/bordeau_color"
+            android:textSize="20pt"
+            android:textStyle="bold"
+            android:fontFamily="@font/joti_one"/>
+
+        <ImageButton
+            android:id="@+id/scanner_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70pt"
+            android:layout_gravity="center"
+            android:contentDescription="@string/scanner_button"
+            android:src="@drawable/app_logo"
+            android:background="@drawable/round"
+            android:backgroundTint="@color/yellow_color"/>
+
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="70dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/search_button"
+            android:src="@drawable/zoom_1"
+            android:background="@drawable/round"
+            android:backgroundTint="@color/green_yellow_color"/>
+
+        <TextView
+            android:id="@+id/search_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:text="@string/join_communities"
+            android:textColor="@color/black"
+            android:textSize="12pt"
+            android:textStyle="bold"
+            android:fontFamily="@font/joti_one"/>
+
 
 </LinearLayout>
+</FrameLayout>
