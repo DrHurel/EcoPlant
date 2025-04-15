@@ -35,7 +35,7 @@ class Button : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.components.fragment_button, container, false)
+        return inflater.inflate(R.layout.fragment_button, container, false)
     }
 
     companion object {
