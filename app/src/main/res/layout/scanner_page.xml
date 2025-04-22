@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/olive_color">
+
+    <!-- Image en arrière-plan -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:scaleType="center"
+        android:src="@drawable/background_leaf" />
+
+    <!-- Contenu principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Direct appareil photo -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/preview_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp" />
+
+        <!-- Ligne-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:orientation="horizontal">
+
+            <!-- Go Home -->
+            <ImageButton
+                android:id="@+id/go_home_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@drawable/home"
+                android:contentDescription="@string/return_to_the_home_page"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/beige_color"/>
+
+            <!-- Prendre photo -->
+            <ImageButton
+                android:id="@+id/take_pic_button"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="25dp"
+                android:contentDescription="@string/take_a_photo"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/white"/>
+
+            <!-- Prendre une photo de son appareil -->
+            <ImageButton
+                android:id="@+id/saved_pic_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="25dp"
+                android:src="@drawable/file"
+                android:contentDescription="@string/take_a_photo_from_your_gallery"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/beige_color"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

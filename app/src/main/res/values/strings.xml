@@ -10,4 +10,7 @@
     <string name="history_button">History</string>
     <string name="search_button">Search</string>
     <string name="join_communities">Join communities</string>
+    <string name="take_a_photo">Take a photo</string>
+    <string name="return_to_the_home_page">Return to the home page</string>
+    <string name="take_a_photo_from_your_gallery">Take a photo from your gallery</string>
 </resources>
