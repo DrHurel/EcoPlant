@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="horizontal">
+
+    <!-- Go Home -->
+    <ImageButton
+        android:id="@+id/go_home_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:src="@drawable/home"
+        android:contentDescription="@string/return_to_the_home_page"
+        android:background="@drawable/round"
+        android:backgroundTint="@color/beige_color"/>
+
+    <!-- Prendre photo -->
+    <ImageButton
+        android:id="@+id/take_pic_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="25dp"
+        android:contentDescription="@string/take_a_photo"
+        android:background="@drawable/round"
+        android:backgroundTint="@color/white"/>
+
+    <!-- Prendre une photo de son appareil -->
+    <ImageButton
+        android:id="@+id/saved_pic_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/file"
+        android:contentDescription="@string/take_a_photo_from_your_gallery"
+        android:background="@drawable/round"
+        android:backgroundTint="@color/beige_color"/>
+</LinearLayout>

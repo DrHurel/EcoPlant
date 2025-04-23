@@ -30,46 +30,13 @@
             android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp" />
 
-        <!-- Ligne-->
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <!-- Fragment pour faire des changments de menu-->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/camera_buttons_fragment"
+            android:name="fr.hureljeremy.gitea.ecoplant.CameraButtonsFragment"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:orientation="horizontal">
-
-            <!-- Go Home -->
-            <ImageButton
-                android:id="@+id/go_home_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:src="@drawable/home"
-                android:contentDescription="@string/return_to_the_home_page"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/beige_color"/>
-
-            <!-- Prendre photo -->
-            <ImageButton
-                android:id="@+id/take_pic_button"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="25dp"
-                android:contentDescription="@string/take_a_photo"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/white"/>
-
-            <!-- Prendre une photo de son appareil -->
-            <ImageButton
-                android:id="@+id/saved_pic_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="25dp"
-                android:src="@drawable/file"
-                android:contentDescription="@string/take_a_photo_from_your_gallery"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/beige_color"/>
-        </LinearLayout>
+            android:layout_gravity="center"
+            android:layout_marginBottom="30dp" />
     </LinearLayout>
 </FrameLayout>

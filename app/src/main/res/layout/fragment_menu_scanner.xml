@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rounded_background"
+    android:backgroundTint="@color/beige_color"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cross_button"
+        android:layout_gravity="start"
+        >
+        <ImageButton
+            android:id="@+id/take_pic_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/close_menu"
+            android:src="@drawable/e_remove_1"
+            android:background="@drawable/round"
+            android:backgroundTint="@color/olive_color"/>
+    </LinearLayout>
+
+    <!-- Grille 2x2 donc 2 linearlayout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp">
+
+        <ImageButton
+            android:id="@+id/bark_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/bark"
+            android:contentDescription="@string/select_bark"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/yellow_color"/>
+
+        <ImageButton
+            android:id="@+id/flower_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:layout_gravity="center"
+            android:src="@drawable/flower_svgrepo_com"
+            android:contentDescription="@string/select_flower"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/yellow_color"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp">
+
+        <ImageButton
+            android:id="@+id/leaf_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:src="@drawable/vecteezy_mint_leaf_vector_design_16744233"
+            android:contentDescription="@string/select_leaf"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/yellow_color"/>
+
+        <ImageButton
+            android:layout_marginStart="25dp"
+            android:id="@+id/fruit_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:src="@drawable/grapes_fruit_emoj_symbol_food_svgrepo_com"
+            android:contentDescription="@string/select_fruit"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/yellow_color"/>
+
+    </LinearLayout>
+
+</LinearLayout>

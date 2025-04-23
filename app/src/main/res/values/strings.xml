@@ -13,4 +13,9 @@
     <string name="take_a_photo">Take a photo</string>
     <string name="return_to_the_home_page">Return to the home page</string>
     <string name="take_a_photo_from_your_gallery">Take a photo from your gallery</string>
+    <string name="close_menu">Close menu</string>
+    <string name="select_bark">Select bark</string>
+    <string name="select_flower">Select flower</string>
+    <string name="select_leaf">Select leaf</string>
+    <string name="select_fruit">Select fruit</string>
 </resources>
