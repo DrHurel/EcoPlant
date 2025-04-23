@@ -14,7 +14,7 @@
         android:src="@drawable/home"
         android:contentDescription="@string/return_to_the_home_page"
         android:background="@drawable/round"
-        android:backgroundTint="@color/beige_color"/>
+        android:backgroundTint="@color/light_cream"/>
 
     <!-- Prendre photo -->
     <ImageButton
@@ -37,5 +37,5 @@
         android:src="@drawable/file"
         android:contentDescription="@string/take_a_photo_from_your_gallery"
         android:background="@drawable/round"
-        android:backgroundTint="@color/beige_color"/>
+        android:backgroundTint="@color/light_cream"/>
 </LinearLayout>

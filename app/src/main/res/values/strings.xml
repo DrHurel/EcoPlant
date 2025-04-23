@@ -18,4 +18,7 @@
     <string name="select_flower">Select flower</string>
     <string name="select_leaf">Select leaf</string>
     <string name="select_fruit">Select fruit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="know_more">Know more</string>
 </resources>
