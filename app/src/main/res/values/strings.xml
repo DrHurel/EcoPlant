@@ -27,4 +27,7 @@
     <string name="parcelle">Parcelle :</string>
     <string name="description">Description :</string>
     <string name="lorem_ipsum_test_1">Suspendisse lectus tellus, posuere sit amet dignissim mollis, laoreet sed dolor. Sed et metus ut elit sagittis ultrices egestas id orci. Fusce elit lectus, aliquet ac ligula ac, egestas placerat velit. Sed faucibus rutrum luctus. Fusce eleifend velit in metus interdum, quis pharetra orci tincidunt. Aliquam pretium at eros vitae pellentesque. Proin tempor ipsum a purus blandit, in pellentesque risus.</string>
+    <string name="home">Home</string>
+    <string name="map">Map</string>
+    <string name="history">History</string>
 </resources>

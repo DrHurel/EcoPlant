@@ -17,9 +17,21 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.home_page)
 
-        // Clique sur le bouton de scan pour aller vers le scanner
+        // Bouton de scan pour aller vers le scanner
         findViewById<ImageButton>(R.id.scanner_button).setOnClickListener {
             val intent = Intent(this, ScannerActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Bouton history
+        findViewById<ImageButton>(R.id.history_button).setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Bouton map
+        findViewById<ImageButton>(R.id.map_button).setOnClickListener {
+            val intent = Intent(this, HistoryMapActivity::class.java)
             startActivity(intent)
         }
     }

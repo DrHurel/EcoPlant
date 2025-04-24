@@ -52,6 +52,14 @@
             android:name=".DisplayPlantInfoActivity"
             android:exported="false"
             android:label="Scanner"/>
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="Scanner"/>
+        <activity
+            android:name=".HistoryMapActivity"
+            android:exported="false"
+            android:label="Scanner"/>
     </application>
 
 </manifest>
