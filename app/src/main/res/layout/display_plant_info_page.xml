@@ -24,77 +24,101 @@
         >
 
         <ImageView
+            android:id="@+id/plant_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
+            android:contentDescription="@string/image_of_the_photo_taken"
             android:src="@drawable/rounded_background" />
 
         <!-- Descriptif -->
 
-        <ScrollView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginBottom="25dp"
-            android:padding="16dp"
-            android:scrollbarThumbVertical="@color/brown_color"
-            android:background="@drawable/rounded_background"
-            android:backgroundTint="@color/beige_color">
+            android:layout_marginTop="25dp">
 
-            <LinearLayout
+            <!-- ScrollView en dessous -->
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:scrollbarThumbVertical="@color/brown_color"
+                android:background="@drawable/rounded_background"
+                android:backgroundTint="@color/beige_color">
 
-                <TextView
-                    android:id="@+id/plant_name"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColorHint="@color/black"
-                    android:fontFamily="@font/joti_one"
-                    android:gravity="center"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:hint="Name"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/plant_informations"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/joti_one"
-                    android:textColorHint="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:hint="Informations :"/>
+                    <TextView
+                        android:id="@+id/plant_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/black"
+                        android:fontFamily="@font/joti_one"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:hint="Name"/>
 
-                <TextView
-                    android:id="@+id/plant_descriptions"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/joti_one"
-                    android:textColorHint="@color/black"
-                    android:textSize="20sp"
-                    android:lineSpacingMultiplier="1.2"
-                    android:textStyle="bold"
-                    android:hint="Suspendisse lectus tellus, posuere sit amet dignissim mollis, laoreet sed dolor. Sed et metus ut elit sagittis ultrices egestas id orci. Fusce elit lectus, aliquet ac ligula ac, egestas placerat velit. Sed faucibus rutrum luctus. Fusce eleifend velit in metus interdum, quis pharetra orci tincidunt. Aliquam pretium at eros vitae pellentesque. Proin tempor ipsum a purus blandit, in pellentesque risus."/>
+                    <TextView
+                        android:id="@+id/plant_informations"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/joti_one"
+                        android:textColorHint="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:hint="Informations :"/>
 
+                    <TextView
+                        android:id="@+id/plant_descriptions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/joti_one"
+                        android:textColorHint="@color/black"
+                        android:textSize="20sp"
+                        android:lineSpacingMultiplier="1.2"
+                        android:textStyle="bold"
+                        android:hint="Suspendisse lectus tellus, posuere sit amet dignissim mollis, laoreet sed dolor. Sed et metus ut elit sagittis ultrices egestas id orci. Fusce elit lectus, aliquet ac ligula ac, egestas placerat velit. Sed faucibus rutrum luctus. Fusce eleifend velit in metus interdum, quis pharetra orci tincidunt. Aliquam pretium at eros vitae pellentesque. Proin tempor ipsum a purus blandit, in pellentesque risus."/>
 
-            </LinearLayout>
+                    <!-- Espace vide car sinon des mots peuvent rester derrière le bouton -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp" />
 
-        </ScrollView>
+                </LinearLayout>
+            </ScrollView>
+
+            <!-- Bouton en savoir plus -->
+            <ImageButton
+                android:id="@+id/know_more_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+
+                android:background="@drawable/rounded_background_low"
+                android:src="@drawable/question_mark_1"
+                android:contentDescription="@string/know_more"/>
+        </FrameLayout>
 
         <!-- Bouton -->
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
-            >
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp">
 
             <Button
                 android:id="@+id/delete_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -105,10 +129,11 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/joti_one"
                 android:background="@drawable/rounded_background"
-                android:backgroundTint="@color/light_cream"/>
+                android:backgroundTint="@color/light_cream" />
 
             <Button
                 android:id="@+id/save_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
