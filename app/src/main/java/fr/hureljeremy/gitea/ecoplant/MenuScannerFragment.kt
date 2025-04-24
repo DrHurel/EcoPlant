@@ -1,5 +1,6 @@
 package fr.hureljeremy.gitea.ecoplant
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,5 +26,30 @@ class MenuScannerFragment : Fragment() {
                 .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
                 .commit()
         }
+
+        // Les bouton des choix : BARK, FLOWER, LEAF, FRUIT
+        view.findViewById<ImageButton>(R.id.bark_button).setOnClickListener {
+            navigateToDisplayPlantInfo("bark")
+        }
+
+        view.findViewById<ImageButton>(R.id.flower_button).setOnClickListener {
+            navigateToDisplayPlantInfo("flower")
+        }
+
+        view.findViewById<ImageButton>(R.id.leaf_button).setOnClickListener {
+            navigateToDisplayPlantInfo("leaf")
+        }
+
+        view.findViewById<ImageButton>(R.id.fruit_button).setOnClickListener {
+            navigateToDisplayPlantInfo("fruit")
+        }
+
+
+    }
+
+    private fun navigateToDisplayPlantInfo(plantPart: String) {
+        val intent = Intent(requireContext(), DisplayPlantInfoActivity::class.java)
+        intent.putExtra("PLANT_PART", plantPart)
+        startActivity(intent)
     }
 }

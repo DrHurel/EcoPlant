@@ -48,6 +48,10 @@
             android:exported="false"
             android:label="Scanner"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".DisplayPlantInfoActivity"
+            android:exported="false"
+            android:label="Scanner"/>
     </application>
 
 </manifest>
