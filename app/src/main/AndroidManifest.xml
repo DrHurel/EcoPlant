@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -15,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoPlant"
         tools:targetApi="31">
+        <service
+            android:name=".services.CameraService"
+            android:enabled="true"
+            android:exported="true"></service>
         <service
             android:name=".services.MapService"
             android:enabled="true"
@@ -51,15 +56,15 @@
         <activity
             android:name=".DisplayPlantInfoActivity"
             android:exported="false"
-            android:label="Scanner"/>
+            android:label="Scanner" />
         <activity
             android:name=".HistoryActivity"
             android:exported="false"
-            android:label="Scanner"/>
+            android:label="Scanner" />
         <activity
             android:name=".HistoryMapActivity"
             android:exported="false"
-            android:label="Scanner"/>
+            android:label="Scanner" />
     </application>
 
 </manifest>
