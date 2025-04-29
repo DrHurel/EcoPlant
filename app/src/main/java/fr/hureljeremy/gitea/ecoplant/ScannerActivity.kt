@@ -86,17 +86,17 @@ class ScannerActivity : FragmentActivity() {
         }
     }
 
-    private  val cameraConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder = service as CameraService.LocalBinder
-            cameraService = binder.getService()
-            binder.bindPreview(findViewById(R.id.preview_view))
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-
-        }
-    }
+//    private  val cameraConnection = object : ServiceConnection {
+//        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+//            val binder = service as CameraService.LocalBinder
+//            cameraService = binder.getService()
+//            binder.bindPreview(findViewById(R.id.preview_view))
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName) {
+//
+//        }
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -104,9 +104,9 @@ class ScannerActivity : FragmentActivity() {
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         }
-        Intent(this, NavigationService::class.java).also { intent ->
-            bindService(intent, cameraConnection, Context.BIND_AUTO_CREATE)
-        }
+//        Intent(this, NavigationService::class.java).also { intent ->
+//            bindService(intent, cameraConnection, Context.BIND_AUTO_CREATE)
+//        }
 
 
     }
@@ -114,7 +114,7 @@ class ScannerActivity : FragmentActivity() {
     override fun onStop() {
         super.onStop()
         unbindService(connection)
-        unbindService(cameraConnection)
+//        unbindService(cameraConnection)
     }
 
 }
