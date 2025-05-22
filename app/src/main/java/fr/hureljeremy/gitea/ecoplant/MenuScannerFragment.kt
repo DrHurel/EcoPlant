@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 
+
+
 class MenuScannerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,4 +54,5 @@ class MenuScannerFragment : Fragment() {
         intent.putExtra("PLANT_PART", plantPart)
         startActivity(intent)
     }
+
 }

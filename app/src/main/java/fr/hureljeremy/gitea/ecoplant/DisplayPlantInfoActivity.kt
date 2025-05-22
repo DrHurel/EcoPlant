@@ -13,8 +13,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
+import fr.hureljeremy.gitea.ecoplant.framework.Page
 
-class DisplayPlantInfoActivity : ComponentActivity()  {
+@Page(route = "plant_info", isDefault = false)
+class DisplayPlantInfoActivity : BaseActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -1,39 +1,39 @@
 package fr.hureljeremy.gitea.ecoplant.services
 
 
-import android.app.Service
 import android.content.Intent
 import android.net.Uri
-import android.os.IBinder
+import com.google.firebase.functions.ktx.functions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import fr.hureljeremy.gitea.ecoplant.R
-import okhttp3.*
+import fr.hureljeremy.gitea.ecoplant.framework.BaseService
+import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
+import fr.hureljeremy.gitea.ecoplant.utils.PictureType
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.IOException
-import fr.hureljeremy.gitea.ecoplant.utils.PictureType
 
 
-class PlantNetService : Service() {
-
-    private final val API_URL = "https://my-api.plantnet.org/"
+@ServiceProvider
+class PlantNetService : BaseService() {
+    private val API_URL = "https://my-api.plantnet.org/"
     private lateinit var API_KEY: String
-
-
-    override fun onBind(intent: Intent): IBinder? {
-        // This service doesn't support binding
-        return null
-    }
+    private val storage = Firebase.storage
+    private val functions = Firebase.functions
 
     override fun onCreate() {
         super.onCreate()
-        // Load API key from resources (you should store this in a more secure way in production)
-        API_KEY = resources.getString(R.string.plantnet_api_key);
-        API_KEY.replace("PLANTNET_API_KEY", ""); // tempo api key for development
-
+        // Access resources through context
+        API_KEY = this.resources.getString(R.string.plantnet_api_key)
+        API_KEY.replace("PLANTNET_API_KEY", "") // tempo api key for development
     }
 
-  fun identifyPlant(imagePath: String, type: PictureType): String {
+    fun identifyPlant(imagePath: String, type: PictureType): String {
         val client = OkHttpClient()
         val file = File(imagePath)
 
@@ -64,20 +64,22 @@ class PlantNetService : Service() {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected response $response")
                 response.body?.string() ?: ""
+
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
             "{\"error\": \"${e.message}\"}"
         }
     }
 
-    private final val BASE_URL = "https://www.tela-botanica.org/?s="
+    private val BASE_URL = "https://www.tela-botanica.org/?s="
 
-   fun displayPlantDetails(plant_name: String) {
+    fun displayPlantDetails(plant_name: String) {
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse("${BASE_URL}${plant_name}")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        startActivity(intent)
+        this.startActivity(intent)
     }
 }

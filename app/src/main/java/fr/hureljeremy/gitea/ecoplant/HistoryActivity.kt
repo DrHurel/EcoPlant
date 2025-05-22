@@ -14,13 +14,17 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.widget.Button
+import fr.hureljeremy.gitea.ecoplant.framework.Inject
+import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.ui.theme.EcoPlantTheme
 import fr.hureljeremy.gitea.ecoplant.utils.Pages
 
 
+@Page(route = "history", isDefault = false)
 class HistoryActivity: ComponentActivity() {
 
+    @Inject
     private lateinit var navigationService: NavigationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,40 +33,12 @@ class HistoryActivity: ComponentActivity() {
         setContentView(R.layout.history_page)
 
         findViewById<Button>(R.id.home_button).setOnClickListener {
-            navigationService.navigate(this, Pages.HOME)
+            navigationService.navigate(this, "home")
         }
 
         findViewById<Button>(R.id.map_button).setOnClickListener {
-            navigationService.navigate(this, Pages.MAP)
+            navigationService.navigate(this, "map")
         }
     }
 
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder = service as NavigationService.LocalBinder
-            navigationService = binder.getService()
-
-            binder.updateCurrentDestination(this::class.java)
-
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Intent(this, NavigationService::class.java).also { intent ->
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
-
-        }
-
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        unbindService(connection)
-    }
 }

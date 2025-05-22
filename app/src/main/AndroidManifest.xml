@@ -15,7 +15,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoPlant"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:name=".EcoPlant"
+        >
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.EcoPlant">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".services.CameraService"
             android:enabled="true"
@@ -35,24 +48,15 @@
         <service
             android:name=".services.NavigationService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.EcoPlant">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ScannerActivity"
             android:exported="false"
             android:label="Scanner"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".DisplayPlantInfoActivity"
             android:exported="false"

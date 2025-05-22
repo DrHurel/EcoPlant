@@ -3,10 +3,12 @@ package fr.hureljeremy.gitea.ecoplant.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import fr.hureljeremy.gitea.ecoplant.framework.BaseService
+import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 
-class MapService : Service() {
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
-    }
+@ServiceProvider
+class MapService : BaseService() {
+
+
 }
