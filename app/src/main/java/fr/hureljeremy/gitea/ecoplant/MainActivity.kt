@@ -33,5 +33,9 @@ class MainActivity  : BaseActivity() {
         findViewById<ImageButton>(R.id.map_button).setOnClickListener {
             navigationService.navigate(this, "map")
         }
+
+        findViewById<ImageButton>(R.id.settings_button).setOnClickListener {
+            navigationService.navigate(this, "setting")
+        }
     }
 }
