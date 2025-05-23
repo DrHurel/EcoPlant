@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,16 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
+import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import kotlin.text.toInt
 import kotlin.times
 
 @Page(route = "plant_info", isDefault = false)
 class DisplayPlantInfoActivity : BaseActivity()  {
+    @Inject
+    private lateinit var navigationService: NavigationService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.display_plant_info_page)
@@ -27,6 +32,10 @@ class DisplayPlantInfoActivity : BaseActivity()  {
 
         findViewById<Button>(R.id.save_button).setOnClickListener {
             showSaveParcelDialog()
+        }
+
+        findViewById<Button>(R.id.delete_button).setOnClickListener {
+            navigationService.navigate(this, "home")
         }
     }
 
