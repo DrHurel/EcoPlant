@@ -15,12 +15,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import kotlin.text.toInt
+import kotlin.times
 
 @Page(route = "plant_info", isDefault = false)
 class DisplayPlantInfoActivity : BaseActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.display_plant_info_page)
 
 
@@ -102,7 +103,12 @@ class DisplayPlantInfoActivity : BaseActivity()  {
         // Redimensionner la boîte de dialogue après l'affichage
         val displayMetrics = resources.displayMetrics
         val width = (displayMetrics.widthPixels * 0.95).toInt()  // 95% de la largeur d'écran
-        val height = (displayMetrics.heightPixels * 0.4).toInt() // 40% de la hauteur d'écran
-        dialog.window?.setLayout(width, height)
+        dialog.window?.apply {
+            setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+            setGravity(android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.CENTER_VERTICAL)
+            attributes = attributes.apply {
+                y = (displayMetrics.heightPixels * 0.05).toInt() // Décalage de 5% vers le bas car légèrement trop haut
+            }
+        }
     }
 }
