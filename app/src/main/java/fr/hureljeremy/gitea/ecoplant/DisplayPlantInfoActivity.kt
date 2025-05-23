@@ -100,7 +100,6 @@ class DisplayPlantInfoActivity : BaseActivity()  {
 
         dialog.show()
 
-        // Redimensionner la boîte de dialogue après l'affichage
         val displayMetrics = resources.displayMetrics
         val width = (displayMetrics.widthPixels * 0.95).toInt()  // 95% de la largeur d'écran
         dialog.window?.apply {
