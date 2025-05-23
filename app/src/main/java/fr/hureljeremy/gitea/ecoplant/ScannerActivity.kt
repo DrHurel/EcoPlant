@@ -1,31 +1,19 @@
 package fr.hureljeremy.gitea.ecoplant
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
-import fr.hureljeremy.gitea.ecoplant.framework.BaseFragmentActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.CameraService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
-import java.io.File
 
 @Page(route = "scanner", isDefault = false)
 class ScannerActivity : BaseActivity() {
@@ -65,12 +53,12 @@ class ScannerActivity : BaseActivity() {
             ) == PackageManager.PERMISSION_GRANTED -> {
                 startCamera()
             }
+
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
-
 
 
     private fun startCamera() {
