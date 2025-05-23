@@ -1,13 +1,15 @@
 package fr.hureljeremy.gitea.ecoplant.framework
 
+import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Listener(val viewId : Int,val type : String = "click")
+annotation class Listener(val type : String = "click")
 
 
 class ListenerManager {
@@ -23,14 +25,26 @@ class ListenerManager {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun findListener(instance: BaseActivity) {
         val clazz = instance.javaClass
         val methods = clazz.declaredMethods
         for (method in methods) {
             if (method.isAnnotationPresent(Listener::class.java)) {
                 val annotation = method.getAnnotation(Listener::class.java)
-                // register the listener
-                val viewId = annotation?.viewId
+                
+                //asset that the function has Parameter id with default value
+                val parameters = method.parameters
+                if (parameters.size != 1) {
+                    throw IllegalArgumentException("Listener method must have exactly one parameter")
+                }
+                val parameter = parameters[0]
+                if (parameter.type != Int::class.java) {
+                    throw IllegalArgumentException("Listener method parameter must be of type Int")
+                }
+                // get the default value of the parameter
+                val viewId = method.getAnnotation(Listener::class.java)?.type?.toIntOrNull()
+
                 val type = annotation?.type
                 val view = viewId?.let { instance.findViewById<View>(it) }
                 when (type) {

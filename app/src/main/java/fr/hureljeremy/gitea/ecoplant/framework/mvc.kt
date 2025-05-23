@@ -7,7 +7,7 @@ abstract class View {
 
 abstract class Model(val view: View) {
     abstract fun fetchData()
-    abstract fun notify()
+    abstract fun notifyView()
 }
 
 abstract  class Controller(val view: View, val model: Model) {
