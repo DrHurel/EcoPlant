@@ -4,11 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import java.util.ServiceLoader
 import androidx.core.view.WindowInsetsCompat
 
 @Target(AnnotationTarget.CLASS)
@@ -43,32 +40,33 @@ class NavigationManager private constructor() {
     }
 
 
-private fun scanForPages(packageName: String) {
-    try {
-        val context = applicationContext ?: return
-        val packageInfo = context.packageManager.getPackageInfo(
-            context.packageName,
-            android.content.pm.PackageManager.GET_ACTIVITIES
-        )
+    private fun scanForPages(packageName: String) {
+        try {
+            val context = applicationContext ?: return
+            val packageInfo = context.packageManager.getPackageInfo(
+                context.packageName,
+                android.content.pm.PackageManager.GET_ACTIVITIES
+            )
 
-        packageInfo.activities?.forEach { activityInfo ->
-            try {
-                val activityClass = Class.forName(activityInfo.name)
-                val pageAnnotation = activityClass.getAnnotation(Page::class.java)
-                if (pageAnnotation != null) {
-                    registerPage(pageAnnotation.route, activityClass as Class<out Activity>)
-                    if (pageAnnotation.isDefault) {
-                        defaultRoute = pageAnnotation.route
+            packageInfo.activities?.forEach { activityInfo ->
+                try {
+                    val activityClass = Class.forName(activityInfo.name)
+                    val pageAnnotation = activityClass.getAnnotation(Page::class.java)
+                    if (pageAnnotation != null) {
+                        registerPage(pageAnnotation.route, activityClass as Class<out Activity>)
+                        if (pageAnnotation.isDefault) {
+                            defaultRoute = pageAnnotation.route
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
-}
+
     fun registerPage(route: String, activityClass: Class<out Activity>) {
         routes[route] = activityClass
     }
@@ -95,11 +93,10 @@ private fun scanForPages(packageName: String) {
     }
 
 
-
     fun getCurrentActivity(): Activity? = currentActivity
 }
 
-abstract class hideAndroidHUD {
+abstract class HideAndroidHUD {
     companion object {
         fun hideSystemBars(activity: Activity) {
             hideNavigationBar(activity)
@@ -110,7 +107,8 @@ abstract class hideAndroidHUD {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 activity.window.insetsController?.let {
                     it.hide(WindowInsetsCompat.Type.navigationBars())
-                    it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    it.systemBarsBehavior =
+                        android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 }
             } else {
                 @Suppress("DEPRECATION")
@@ -127,7 +125,8 @@ abstract class hideAndroidHUD {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 activity.window.insetsController?.let {
                     it.hide(WindowInsetsCompat.Type.statusBars())
-                    it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    it.systemBarsBehavior =
+                        android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 }
             } else {
                 @Suppress("DEPRECATION")
@@ -142,26 +141,14 @@ abstract class hideAndroidHUD {
     }
 }
 
-abstract class BaseActivity : ComponentActivity() {
+abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        hideAndroidHUD.hideNavigationBar(this);
+        HideAndroidHUD.hideNavigationBar(this);
         ServiceLocator.getInstance().injectServices(this)
         NavigationManager.getInstance().setCurrentActivity(this)
-
-    }
-
-}
-
-abstract class BaseFragmentActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        hideAndroidHUD.hideNavigationBar(this);
-
-        ServiceLocator.getInstance().injectServices(this)
-        NavigationManager.getInstance().setCurrentActivity(this)
+        ListenerManager.getInstance().findListener(this)
     }
 
 }

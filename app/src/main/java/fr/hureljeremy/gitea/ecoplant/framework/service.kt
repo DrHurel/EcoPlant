@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
-import dalvik.system.DexFile
 import dalvik.system.PathClassLoader
 import java.util.Enumeration
 import kotlin.reflect.KClass
@@ -66,6 +65,7 @@ class ServiceLocator private constructor() {
                     val binder = service as? BaseService.LocalBinder
                     binder?.getService()?.let { services[serviceClass] = it }
                 }
+
                 override fun onServiceDisconnected(name: ComponentName?) {}
             }, Context.BIND_AUTO_CREATE)
         }
@@ -77,55 +77,56 @@ class ServiceLocator private constructor() {
             ?: throw IllegalStateException("Service ${serviceClass.simpleName} not found")
     }
 
- fun getClassesInPackage(packageName: String, classLoader: ClassLoader): List<Class<*>> {
-     val classes = ArrayList<Class<*>>()
-     try {
-         val context = context ?: throw IllegalStateException("Context not initialized")
-         val pm = context.packageManager
-         val packageInfo = pm.getPackageInfo(context.packageName, PackageManager.GET_META_DATA)
-         val sourceDir = packageInfo.applicationInfo?.sourceDir
-             ?: throw IllegalStateException("Source directory not found")
+    fun getClassesInPackage(packageName: String, classLoader: ClassLoader): List<Class<*>> {
+        val classes = ArrayList<Class<*>>()
+        try {
+            val context = context ?: throw IllegalStateException("Context not initialized")
+            val pm = context.packageManager
+            val packageInfo = pm.getPackageInfo(context.packageName, PackageManager.GET_META_DATA)
+            val sourceDir = packageInfo.applicationInfo?.sourceDir
+                ?: throw IllegalStateException("Source directory not found")
 
-         val pathClassLoader = context.classLoader as PathClassLoader
-         val dexPathList = pathClassLoader.javaClass.superclass
-             ?.getDeclaredField("pathList")?.apply { isAccessible = true }
-             ?.get(pathClassLoader)
+            val pathClassLoader = context.classLoader as PathClassLoader
+            val dexPathList = pathClassLoader.javaClass.superclass
+                ?.getDeclaredField("pathList")?.apply { isAccessible = true }
+                ?.get(pathClassLoader)
 
-         val dexElements = dexPathList?.javaClass
-             ?.getDeclaredField("dexElements")?.apply { isAccessible = true }
-             ?.get(dexPathList) as Array<*>
+            val dexElements = dexPathList?.javaClass
+                ?.getDeclaredField("dexElements")?.apply { isAccessible = true }
+                ?.get(dexPathList) as Array<*>
 
-         for (element in dexElements) {
-             val dexFile = element?.javaClass
-                 ?.getDeclaredField("dexFile")
-                 ?.apply { isAccessible = true }
-                 ?.get(element)
+            for (element in dexElements) {
+                val dexFile = element?.javaClass
+                    ?.getDeclaredField("dexFile")
+                    ?.apply { isAccessible = true }
+                    ?.get(element)
 
-             if (dexFile != null) {
-                 val entries = dexFile.javaClass
-                     .getDeclaredMethod("entries")
-                     .invoke(dexFile) as Enumeration<String>
+                if (dexFile != null) {
+                    val entries = dexFile.javaClass
+                        .getDeclaredMethod("entries")
+                        .invoke(dexFile) as Enumeration<String>
 
-                 while (entries.hasMoreElements()) {
-                     val entry = entries.nextElement()
-                     if (entry.startsWith(packageName)) {
-                         try {
-                             val entryClass = Class.forName(entry, false, classLoader)
-                             if (!entryClass.isInterface && !entryClass.isEnum) {
-                                 classes.add(entryClass)
-                             }
-                         } catch (e: ClassNotFoundException) {
-                             continue
-                         }
-                     }
-                 }
-             }
-         }
-     } catch (e: Exception) {
-         e.printStackTrace()
-     }
-     return classes
- }
+                    while (entries.hasMoreElements()) {
+                        val entry = entries.nextElement()
+                        if (entry.startsWith(packageName)) {
+                            try {
+                                val entryClass = Class.forName(entry, false, classLoader)
+                                if (!entryClass.isInterface && !entryClass.isEnum) {
+                                    classes.add(entryClass)
+                                }
+                            } catch (e: ClassNotFoundException) {
+                                continue
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return classes
+    }
+
     companion object {
         private var instance: ServiceLocator? = null
 

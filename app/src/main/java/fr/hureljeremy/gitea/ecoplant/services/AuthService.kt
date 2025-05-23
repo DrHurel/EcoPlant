@@ -1,8 +1,5 @@
 package fr.hureljeremy.gitea.ecoplant.services
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 
@@ -11,8 +8,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 class AuthService : BaseService() {
 
 
-
-    fun login(username : String, password : String)  {
+    fun login(username: String, password: String) {
         // TODO("Not yet implemented")
         // Call the API to login
         // If success, save the token in SharedPreferences
@@ -25,20 +21,20 @@ class AuthService : BaseService() {
         // Remove the token from SharedPreferences
     }
 
-    fun register(username : String, password : String) {
+    fun register(username: String, password: String) {
         // TODO("Not yet implemented")
         // Call the API to register
         // If success, save the token in SharedPreferences
         // If failure, show an error message
     }
 
-    fun isLoggedIn() : Boolean {
+    fun isLoggedIn(): Boolean {
         // TODO("Not yet implemented")
         // Check if the token is present in SharedPreferences
         return false
     }
 
-    fun getToken() : String {
+    fun getToken(): String {
         // TODO("Not yet implemented")
         // Get the token from SharedPreferences
         return ""

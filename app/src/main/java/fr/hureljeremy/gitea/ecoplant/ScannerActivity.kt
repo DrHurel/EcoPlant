@@ -19,6 +19,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.BaseFragmentActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
@@ -27,7 +28,7 @@ import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import java.io.File
 
 @Page(route = "scanner", isDefault = false)
-class ScannerActivity : BaseFragmentActivity() {
+class ScannerActivity : BaseActivity() {
     @Inject
     lateinit var navigationService: NavigationService
 

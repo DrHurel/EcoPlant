@@ -1,7 +1,6 @@
 package fr.hureljeremy.gitea.ecoplant
 
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +11,13 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.enableEdgeToEdge
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
-import kotlin.text.toInt
-import kotlin.times
 
 @Page(route = "plant_info", isDefault = false)
-class DisplayPlantInfoActivity : BaseActivity()  {
+class DisplayPlantInfoActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +44,8 @@ class DisplayPlantInfoActivity : BaseActivity()  {
         val spinner = dialog.findViewById<Spinner>(R.id.parcel_spinner)
 
         // Liste des parcelles (à remplacer par vos données réelles)
-        val parcelles = arrayOf("Parcelle A", "Parcelle B", "Parcelle C", "Parcelle D", "Parcelle E")
+        val parcelles =
+            arrayOf("Parcelle A", "Parcelle B", "Parcelle C", "Parcelle D", "Parcelle E")
 
         // Création d'un adaptateur personnalisé utilisant spinner_item.xml
         val adapter = object : ArrayAdapter<String>(
@@ -64,7 +60,11 @@ class DisplayPlantInfoActivity : BaseActivity()  {
                 return view
             }
 
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
                 val view = super.getDropDownView(position, convertView, parent)
                 val textView = view as TextView
                 textView.textSize = 18f
@@ -78,7 +78,12 @@ class DisplayPlantInfoActivity : BaseActivity()  {
         // Gestion de la sélection du spinner
         var selectedParcel = parcelles[0] // Valeur par défaut
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 selectedParcel = parcelles[position]
             }
 
@@ -115,7 +120,8 @@ class DisplayPlantInfoActivity : BaseActivity()  {
             setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
             setGravity(android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.CENTER_VERTICAL)
             attributes = attributes.apply {
-                y = (displayMetrics.heightPixels * 0.05).toInt() // Décalage de 5% vers le bas car légèrement trop haut
+                y =
+                    (displayMetrics.heightPixels * 0.05).toInt() // Décalage de 5% vers le bas car légèrement trop haut
             }
         }
     }

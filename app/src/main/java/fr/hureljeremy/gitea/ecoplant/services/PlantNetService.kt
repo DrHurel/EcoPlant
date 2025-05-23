@@ -37,28 +37,17 @@ class PlantNetService : BaseService() {
         val client = OkHttpClient()
         val file = File(imagePath)
 
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(
-                "images",
-                file.name,
-                file.asRequestBody("image/*".toMediaType())
-            )
-            .addFormDataPart("organs", type.toString().lowercase())
-            .addFormDataPart("project", "all")
-            .addFormDataPart("includeRelatedImages", "true")
-            .addFormDataPart("noReject", "true")
-            .addFormDataPart("lang", "en")
-            .addFormDataPart("bestMatch", "true")
-            .build()
+        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+                "images", file.name, file.asRequestBody("image/*".toMediaType())
+            ).addFormDataPart("organs", type.toString().lowercase())
+            .addFormDataPart("project", "all").addFormDataPart("includeRelatedImages", "true")
+            .addFormDataPart("noReject", "true").addFormDataPart("lang", "en")
+            .addFormDataPart("bestMatch", "true").build()
 
-        val request = Request.Builder()
-            .url("${API_URL}v2/identify/all")
-            .addHeader("Api-Key", API_KEY)
-            .addHeader("Accept", "application/json")
-            .addHeader("Content-Type", "multipart/form-data")
-            .post(requestBody)
-            .build()
+        val request =
+            Request.Builder().url("${API_URL}v2/identify/all").addHeader("Api-Key", API_KEY)
+                .addHeader("Accept", "application/json")
+                .addHeader("Content-Type", "multipart/form-data").post(requestBody).build()
 
         return try {
             client.newCall(request).execute().use { response ->
