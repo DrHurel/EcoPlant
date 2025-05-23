@@ -6,9 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
@@ -21,6 +24,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.CameraService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import java.io.File
 
 @Page(route = "scanner", isDefault = false)
 class ScannerActivity : BaseFragmentActivity() {
@@ -31,6 +35,8 @@ class ScannerActivity : BaseFragmentActivity() {
     lateinit var cameraService: CameraService
 
     private lateinit var previewView: PreviewView
+    private lateinit var capturedImageView: ImageView
+    private var isShowingCapturedImage = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -46,6 +52,7 @@ class ScannerActivity : BaseFragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.scanner_page)
         previewView = findViewById(R.id.preview_view)
+        capturedImageView = findViewById(R.id.captured_image_view)
         checkCameraPermission()
     }
 
@@ -67,5 +74,20 @@ class ScannerActivity : BaseFragmentActivity() {
 
     private fun startCamera() {
         cameraService.initializeCamera(this, previewView)
+    }
+
+    fun onPhotoTaken(bitmap: Bitmap) {
+        capturedImageView.setImageBitmap(bitmap)
+        previewView.visibility = View.GONE
+        capturedImageView.visibility = View.VISIBLE
+        isShowingCapturedImage = true
+    }
+
+    fun returnToCamera() {
+        if (isShowingCapturedImage) {
+            previewView.visibility = View.VISIBLE
+            capturedImageView.visibility = View.GONE
+            isShowingCapturedImage = false
+        }
     }
 }

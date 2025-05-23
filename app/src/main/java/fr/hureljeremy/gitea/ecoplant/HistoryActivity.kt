@@ -29,7 +29,6 @@ class HistoryActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.history_page)
 
         findViewById<Button>(R.id.home_button).setOnClickListener {

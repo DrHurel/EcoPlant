@@ -20,15 +20,27 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Direct appareil photo -->
-        <androidx.camera.view.PreviewView
-            android:id="@+id/preview_view"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginHorizontal="25dp"
             android:layout_marginTop="40dp"
-            android:layout_marginBottom="25dp" />
+            android:layout_marginBottom="25dp">
+
+            <!-- Direct appareil photo -->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/preview_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/captured_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"/>
+        </FrameLayout>
 
         <!-- Fragment pour faire des changments de menu-->
         <androidx.fragment.app.FragmentContainerView

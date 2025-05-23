@@ -25,13 +25,14 @@ import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-
+import kotlin.compareTo
 
 
 @ServiceProvider
 class CameraService : BaseService() {
     private var imageCapture: ImageCapture? = null
     private var cameraProvider: ProcessCameraProvider? = null
+    private var lastImageUri: Uri? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -84,6 +85,7 @@ class CameraService : BaseService() {
                     resolver.openOutputStream(imageUri)?.use { outputStream ->
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     }
+                    lastImageUri = imageUri
                     return imageUri
                 }
             }
@@ -91,5 +93,25 @@ class CameraService : BaseService() {
             Log.e("CameraService", "Error saving picture", e)
         }
         return null
+    }
+
+    fun deleteLastPicture(): Boolean {
+        lastImageUri?.let { uri ->
+            try {
+                applicationContext?.contentResolver?.let { resolver ->
+                    val deletedRows = resolver.delete(uri, null, null)
+                    if (deletedRows > 0) {
+                        Log.d("CameraService", "Image supprimée avec succès: $uri")
+                        lastImageUri = null
+                        return true
+                    } else {
+                        Log.d("CameraService", "Échec de la suppression: $uri")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("CameraService", "Erreur lors de la suppression de l'image", e)
+            }
+        }
+        return false
     }
 }

@@ -28,7 +28,6 @@ class HistoryMapActivity: ComponentActivity() {
     private lateinit var navigationService: NavigationService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.history_map_page)
 
         findViewById<Button>(R.id.home_button).setOnClickListener {

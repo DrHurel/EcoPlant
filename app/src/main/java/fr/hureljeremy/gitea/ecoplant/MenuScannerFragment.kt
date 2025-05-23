@@ -24,6 +24,8 @@ class MenuScannerFragment : Fragment() {
 
         // Retour au fragment caméra quand on clique sur la croix
         view.findViewById<ImageButton>(R.id.take_pic_button).setOnClickListener {
+            (activity as? ScannerActivity)?.cameraService?.deleteLastPicture()
+            (activity as? ScannerActivity)?.returnToCamera()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
                 .commit()

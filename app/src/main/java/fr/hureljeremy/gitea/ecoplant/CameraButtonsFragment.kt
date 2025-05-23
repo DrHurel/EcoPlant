@@ -29,6 +29,7 @@ class CameraButtonsFragment : Fragment() {
               previewView?.let { view ->
                   view.bitmap?.let { bitmap ->
                       (activity as? ScannerActivity)?.cameraService?.savePicture(bitmap)
+                      (activity as? ScannerActivity)?.onPhotoTaken(bitmap)
                   }
               }
               parentFragmentManager.beginTransaction()

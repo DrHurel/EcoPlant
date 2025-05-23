@@ -6,8 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import java.util.ServiceLoader
+import androidx.core.view.WindowInsetsCompat
 
 @Target(AnnotationTarget.CLASS)
 annotation class Page(
@@ -96,19 +98,71 @@ private fun scanForPages(packageName: String) {
 
     fun getCurrentActivity(): Activity? = currentActivity
 }
+
+abstract class hideAndroidHUD {
+    companion object {
+        fun hideSystemBars(activity: Activity) {
+            hideNavigationBar(activity)
+            hideNotificationBar(activity)
+        }
+
+        fun hideNavigationBar(activity: Activity) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                activity.window.insetsController?.let {
+                    it.hide(WindowInsetsCompat.Type.navigationBars())
+                    it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                activity.window.decorView.systemUiVisibility = (
+                        android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                or android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                or android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                or android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        )
+            }
+        }
+
+        fun hideNotificationBar(activity: Activity) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                activity.window.insetsController?.let {
+                    it.hide(WindowInsetsCompat.Type.statusBars())
+                    it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                activity.window.decorView.systemUiVisibility = (
+                        android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                or android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                or android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                or android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+                        )
+            }
+        }
+    }
+}
+
 abstract class BaseActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        hideAndroidHUD.hideNavigationBar(this);
         ServiceLocator.getInstance().injectServices(this)
         NavigationManager.getInstance().setCurrentActivity(this)
 
     }
+
 }
 
 abstract class BaseFragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        hideAndroidHUD.hideNavigationBar(this);
+
         ServiceLocator.getInstance().injectServices(this)
         NavigationManager.getInstance().setCurrentActivity(this)
     }
+
 }
+
