@@ -35,5 +35,6 @@
     <string name="new_user_name">New user name :</string>
     <string name="change">Change</string>
     <string name="delete_account">Delete Account</string>
-    <string name="go_back">Go back</string> <!-- Should be replace with a real value store in a secret  -->
+    <string name="go_back">Go back</string>
+    <string name="name">Name</string> <!-- Should be replace with a real value store in a secret  -->
 </resources>

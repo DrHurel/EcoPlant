@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:background="@drawable/rounded_background_low"
+        android:backgroundTint="@color/brown_color">
+
+        <TextView
+            android:id="@+id/history_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="125dp"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/joti_one"
+            android:textColorHint="@color/light_cream"
+            android:hint="@string/name"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/history_image"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:contentDescription="@string/image_of_the_photo_taken"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background" />
+
+</FrameLayout>
