@@ -37,5 +37,9 @@ class MainActivity  : BaseActivity() {
         findViewById<ImageButton>(R.id.settings_button).setOnClickListener {
             navigationService.navigate(this, "setting")
         }
+
+        findViewById<ImageButton>(R.id.my_parcels_button).setOnClickListener {
+            navigationService.navigate(this, "parcels")
+        }
     }
 }

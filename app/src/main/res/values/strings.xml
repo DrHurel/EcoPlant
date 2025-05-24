@@ -36,5 +36,11 @@
     <string name="change">Change</string>
     <string name="delete_account">Delete Account</string>
     <string name="go_back">Go back</string>
-    <string name="name">Name</string> <!-- Should be replace with a real value store in a secret  -->
+    <string name="name">Name</string>
+    <string name="my_parcels">My Parcels</string>
+    <string name="services">Services</string>
+    <string name="minimum_fiability_score">Minimum fiability score</string>
+    <string name="public_">public</string>
+    <string name="private_">private</string>
+    <string name="manage_users">Manage Users</string> <!-- Should be replace with a real value store in a secret  -->
 </resources>
