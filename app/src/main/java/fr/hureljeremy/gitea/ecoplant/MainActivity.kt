@@ -15,7 +15,6 @@ class MainActivity  : BaseActivity() {
     private lateinit var navigationService: NavigationService
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_page)
