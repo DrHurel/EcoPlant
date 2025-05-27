@@ -1,16 +1,24 @@
 package fr.hureljeremy.gitea.ecoplant
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import fr.hureljeremy.gitea.ecoplant.framework.BaseFragment
+import fr.hureljeremy.gitea.ecoplant.framework.Inject
+import fr.hureljeremy.gitea.ecoplant.framework.Organ
+import fr.hureljeremy.gitea.ecoplant.services.CameraService
+import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-
-
-class MenuScannerFragment : Fragment() {
+class MenuScannerFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -18,6 +26,13 @@ class MenuScannerFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_menu_scanner, container, false)
     }
+
+    @Inject
+    private lateinit var plantNetService: PlantNetService
+
+    @Inject
+    private lateinit var cameraService: CameraService
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,19 +48,73 @@ class MenuScannerFragment : Fragment() {
 
         // Les bouton des choix : BARK, FLOWER, LEAF, FRUIT
         view.findViewById<ImageButton>(R.id.bark_button).setOnClickListener {
-            navigateToDisplayPlantInfo("bark")
+            Log.w(TAG, "Bark button clicked")
+            val imagePath = cameraService.getLastImageUri()
+            if (imagePath != null) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val res = plantNetService.identifyPlant(imagePath, Organ.BARK)
+                    withContext(Dispatchers.Main) {
+                        navigateToDisplayPlantInfo("bark")
+                    }
+                }
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
+                    .commit()
+            }
+
+
         }
 
         view.findViewById<ImageButton>(R.id.flower_button).setOnClickListener {
-            navigateToDisplayPlantInfo("flower")
+            val imagePath = cameraService.getLastImageUri()
+            if (imagePath != null) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val res = plantNetService.identifyPlant(imagePath, Organ.FLOWER)
+                    Log.d(TAG, "Flower identification result: $res")
+                    withContext(Dispatchers.Main) {
+                        navigateToDisplayPlantInfo("flower")
+                    }
+                }
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
+                    .commit()
+            }
         }
 
         view.findViewById<ImageButton>(R.id.leaf_button).setOnClickListener {
-            navigateToDisplayPlantInfo("leaf")
+            val imagePath = cameraService.getLastImageUri()
+            if (imagePath != null) {
+
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val res = plantNetService.identifyPlant(imagePath, Organ.LEAF)
+                    withContext(Dispatchers.Main) {
+                        navigateToDisplayPlantInfo("leaf")
+                    }
+                }
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
+                    .commit()
+            }
         }
 
         view.findViewById<ImageButton>(R.id.fruit_button).setOnClickListener {
-            navigateToDisplayPlantInfo("fruit")
+            val imagePath = cameraService.getLastImageUri()
+            if (imagePath != null) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val res = plantNetService.identifyPlant(imagePath, Organ.FRUIT)
+                    withContext(Dispatchers.Main) {
+                        navigateToDisplayPlantInfo("fruit")
+                    }
+                }
+
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
+                    .commit()
+            }
         }
 
 

@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 
 @Target(AnnotationTarget.CLASS)
 annotation class Page(
@@ -148,8 +149,16 @@ abstract class BaseActivity : AppCompatActivity() {
         HideAndroidHUD.hideNavigationBar(this);
         ServiceLocator.getInstance().injectServices(this)
         NavigationManager.getInstance().setCurrentActivity(this)
-        ListenerManager.getInstance().findListener(this)
+        //listenerManager.getInstance().findListener(this)
     }
 
 }
 
+abstract class BaseFragment : Fragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ServiceLocator.getInstance().injectServices(this)
+        NavigationManager.getInstance().setCurrentActivity(requireActivity())
+        //ListenerManager.getInstance().findListener(this)
+    }
+}

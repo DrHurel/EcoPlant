@@ -17,9 +17,11 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
+@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 annotation class ServiceProvider
 
+@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 annotation class Inject
 
@@ -77,7 +79,7 @@ class ServiceLocator private constructor() {
             ?: throw IllegalStateException("Service ${serviceClass.simpleName} not found")
     }
 
-    fun getClassesInPackage(packageName: String, classLoader: ClassLoader): List<Class<*>> {
+    private fun getClassesInPackage(packageName: String, classLoader: ClassLoader): List<Class<*>> {
         val classes = ArrayList<Class<*>>()
         try {
             val context = context ?: throw IllegalStateException("Context not initialized")
@@ -111,7 +113,10 @@ class ServiceLocator private constructor() {
                         if (entry.startsWith(packageName)) {
                             try {
                                 val entryClass = Class.forName(entry, false, classLoader)
-                                if (!entryClass.isInterface && !entryClass.isEnum) {
+                                if (!entryClass.isInterface &&
+                                    !entryClass.isEnum &&
+                                    !entryClass.isSynthetic &&
+                                    !entryClass.name.contains("$")) {
                                     classes.add(entryClass)
                                 }
                             } catch (e: ClassNotFoundException) {

@@ -23,9 +23,16 @@ class CameraService : BaseService() {
     private var cameraProvider: ProcessCameraProvider? = null
     private var lastImageUri: Uri? = null
 
+
     override fun onCreate() {
         super.onCreate()
         Log.d("CameraService", "Service created")
+    }
+
+
+
+    fun getLastImageUri(): Uri? {
+        return lastImageUri
     }
 
     fun initializeCamera(activity: BaseActivity, previewView: PreviewView) {
