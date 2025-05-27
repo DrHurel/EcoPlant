@@ -3,6 +3,7 @@ package fr.hureljeremy.gitea.ecoplant.services
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -12,7 +13,9 @@ import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.framework.PlantNetClient
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -38,9 +41,15 @@ class PlantNetService : BaseService() {
     }
 
 
-    suspend fun identifyPlant(imageUri: Uri, type: Organ): String {
+    data class PlantIdentificationResult(
+        val name: String,
+        val description: String
+    )
+
+    suspend fun identifyPlant(imageUri: Uri, type: Organ): Result<PlantIdentificationResult> {
         if (isIdentifing.get()) {
-            return "Identification in progress, please wait."
+            Log.w("PlantNetService", "Identification already in progress")
+            return Result.failure(IllegalStateException("Identification already in progress"))
         }
         isIdentifing.set(true)
 
@@ -66,12 +75,25 @@ class PlantNetService : BaseService() {
 
             response.fold(
                 onSuccess = { result ->
-                    result.results.firstOrNull()?.species?.scientificName ?: "Unknown plant"
-                },
-                onFailure = { "Error: ${it.message}" }
+                    result.results.firstOrNull()?.species?.genus?.let { genus ->
+                        Log.d("PlantNetService", "Identified genus: $genus")
+                    }
+                    val name = result.results.firstOrNull()?.species?.scientificNameWithoutAuthor ?: "Unknown plant"
+                    val description  = "$name is a plant of the family ${result.results.firstOrNull()?.species?.family ?: "Unknown family"}. It is commonly known as " +
+                        (result.results.firstOrNull()?.species?.commonNames?.firstOrNull() ?: "Unknown common name") + "."
+                    result.results.firstOrNull()?.species?.commonNames?.firstOrNull() ?: "Unknown plant"
+
+                    Result.success(PlantIdentificationResult(name, description))
+
+                 },
+                onFailure = {
+                    Log.e("PlantNetService", "Identification failed", it)
+                    Result.failure(it)
+                }
             )
         } catch (e: Exception) {
-            "Error: ${e.message}"
+            Log.e("PlantNetService", "Error during plant identification", e)
+            Result.failure(e)
         } finally {
             isIdentifing.set(false)
         }
@@ -79,13 +101,26 @@ class PlantNetService : BaseService() {
 
     private val BASE_URL = "https://www.tela-botanica.org/?s="
 
-    fun displayPlantDetails(plant_name: String) {
+    fun displayPlantDetails(plantName: String) {
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("${BASE_URL}${plant_name}")
+            data = Uri.parse("${BASE_URL}${plantName}")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         this.startActivity(intent)
     }
 
-    suspend fun getPlantScore(plant_name: String) {}
+    suspend fun getPlantScore(plantName: String) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val data = hashMapOf("plant_name" to plantName)
+                val result = functions
+                    .getHttpsCallable("getPlantScore")
+                    .call(data)
+                    .await()
+                result.data as String
+            } catch (e: Exception) {
+                "Error: ${e.message}"
+            }
+        }
+    }
 }

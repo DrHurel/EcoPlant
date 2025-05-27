@@ -35,6 +35,10 @@ class CameraService : BaseService() {
         return lastImageUri
     }
 
+    fun setLastImageUri(uri: Uri) {
+        lastImageUri = uri
+    }
+
     fun initializeCamera(activity: BaseActivity, previewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(activity)
 

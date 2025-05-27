@@ -52,81 +52,54 @@ class MenuScannerFragment : BaseFragment() {
 
         // Les bouton des choix : BARK, FLOWER, LEAF, FRUIT
         view.findViewById<ImageButton>(R.id.bark_button).setOnClickListener {
-            Log.w(TAG, "Bark button clicked")
-            val imagePath = cameraService.getLastImageUri()
-            if (imagePath != null) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    val res = plantNetService.identifyPlant(imagePath, Organ.BARK)
-                    withContext(Dispatchers.Main) {
-                        navigateToDisplayPlantInfo("bark", res)
-                    }
-                }
-            } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
-                    .commit()
-            }
-
-
+            identifyPlant("bark", Organ.BARK)
         }
 
         view.findViewById<ImageButton>(R.id.flower_button).setOnClickListener {
-            val imagePath = cameraService.getLastImageUri()
-            if (imagePath != null) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    val res = plantNetService.identifyPlant(imagePath, Organ.FLOWER)
-                    Log.d(TAG, "Flower identification result: $res")
-                    navigateToDisplayPlantInfo("flower", res)
-
-                }
-            } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
-                    .commit()
-            }
+            identifyPlant("flower", Organ.FLOWER)
         }
 
         view.findViewById<ImageButton>(R.id.leaf_button).setOnClickListener {
-            val imagePath = cameraService.getLastImageUri()
-            if (imagePath != null) {
-
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    val res = plantNetService.identifyPlant(imagePath, Organ.LEAF)
-                    navigateToDisplayPlantInfo("leaf", res)
-                }
-            } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
-                    .commit()
-            }
+            identifyPlant("leaf", Organ.LEAF)
         }
 
         view.findViewById<ImageButton>(R.id.fruit_button).setOnClickListener {
-            val imagePath = cameraService.getLastImageUri()
-            if (imagePath != null) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    val res = plantNetService.identifyPlant(imagePath, Organ.FRUIT)
-                    navigateToDisplayPlantInfo("fruit", res)
-
-                }
-
-            } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
-                    .commit()
-            }
+            identifyPlant("fruit", Organ.FRUIT)
         }
 
 
     }
 
-    private fun navigateToDisplayPlantInfo(plantPart: String, plantName: String = "Unknown Plant") {
+    private fun identifyPlant(part : String,organ: Organ) {
+        val imagePath = cameraService.getLastImageUri()
+        if (imagePath != null) {
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                val res = plantNetService.identifyPlant(imagePath, organ)
+                Log.d(TAG, "Flower identification result: $res")
+                if (res.isFailure) {
+                    navigationService.navigateToDefault(requireContext())
+                }
+                navigateToDisplayPlantInfo(part, res.getOrThrow())
+
+            }
+        } else {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.camera_buttons_fragment, CameraButtonsFragment())
+                .commit()
+        }
+    }
+
+    private fun navigateToDisplayPlantInfo(plantPart: String,identificationResult: PlantNetService.PlantIdentificationResult ) {
         navigationService.navigate(requireContext(), "plant_info", Bundle().apply {
             putString("PLANT_PART", plantPart)
             putString(
                 "PLANT_NAME",
-                plantName
-            ) // Placeholder, replace with actual plant name if available
+                identificationResult.name
+            )
+            putString(
+                "PLANT_DESCRIPTION",
+                identificationResult.description
+            )
         })
     }
 

@@ -8,6 +8,7 @@ import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -15,27 +16,37 @@ import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
 
 @Page(route = "plant_info", isDefault = false)
 class DisplayPlantInfoActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.display_plant_info_page)
 
+    @Inject
+    private lateinit var plantNetService: PlantNetService
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.display_plant_info_page)
 
-        findViewById<Button>(R.id.save_button).setOnClickListener {
-            showSaveParcelDialog()
-        }
+    val plantName = intent.extras?.getString("PLANT_NAME") ?: "Unknown Plant"
 
-        findViewById<TextView>(R.id.plant_name).hint = savedInstanceState?.getString("PLANT_NAME") ?: "Unknown Plant"
+    findViewById<TextView>(R.id.plant_name).hint = plantName
+    findViewById<TextView>(R.id.plant_descriptions).hint = intent.extras?.getString("PLANT_DESCRIPTION") ?: "No description available"
 
-        findViewById<Button>(R.id.delete_button).setOnClickListener {
-            navigationService.navigate(this, "home")
-        }
+    findViewById<Button>(R.id.save_button).setOnClickListener {
+        showSaveParcelDialog()
     }
 
+    findViewById<Button>(R.id.delete_button).setOnClickListener {
+        navigationService.navigate(this, "home")
+    }
+
+
+    findViewById<ImageButton>(R.id.know_more_button).setOnClickListener {
+        plantNetService.displayPlantDetails(plantName)
+    }
+}
     private fun showSaveParcelDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)  // Supprimer la barre de titre

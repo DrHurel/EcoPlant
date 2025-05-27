@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -27,6 +28,10 @@ class ScannerActivity : BaseActivity() {
     private lateinit var capturedImageView: ImageView
     private var isShowingCapturedImage = false
 
+    companion object {
+        const val REQUEST_IMAGE_PICK = 1001
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -43,6 +48,30 @@ class ScannerActivity : BaseActivity() {
         previewView = findViewById(R.id.preview_view)
         capturedImageView = findViewById(R.id.captured_image_view)
         checkCameraPermission()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
+            val imageUri = data?.data
+            if (imageUri != null) {
+                // Stocke l’URI dans CameraService pour réutilisation
+                cameraService.setLastImageUri(imageUri)
+                // Affiche l’image sélectionnée dans l’ImageView
+                capturedImageView.setImageURI(imageUri)
+                previewView.visibility = View.GONE
+                capturedImageView.visibility = View.VISIBLE
+                isShowingCapturedImage = true
+                // Affiche le menu de sélection
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.camera_buttons_fragment, MenuScannerFragment())
+                    .commit()
+            }
+        }
+    }
+
+    fun loadImage(intent: Intent, requestCode: Int) {
+        startActivityForResult(intent, requestCode)
     }
 
     private fun checkCameraPermission() {
