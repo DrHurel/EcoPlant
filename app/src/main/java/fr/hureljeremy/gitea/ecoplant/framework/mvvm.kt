@@ -53,7 +53,7 @@ class ViewModelFactory {
         @Suppress("UNCHECKED_CAST")
         fun <T : MVVMViewModel> getViewModel(modelClass: Class<T>): T {
             return viewModels.getOrPut(modelClass) {
-                modelClass.newInstance()
+                modelClass.getDeclaredConstructor().newInstance()
             } as T
         }
 

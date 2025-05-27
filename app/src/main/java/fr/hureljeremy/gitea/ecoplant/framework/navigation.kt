@@ -72,13 +72,14 @@ class NavigationManager private constructor() {
         routes[route] = activityClass
     }
 
-    fun navigate(context: Context, route: String) {
+    fun navigate(context: Context, route: String, bundle: Bundle? = null) {
         val activityClass = routes[route] ?: run {
             throw IllegalArgumentException("No activity found for route: $route")
         }
 
         val intent = Intent(context, activityClass).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            bundle?.let { putExtras(it) }
         }
         context.startActivity(intent)
     }

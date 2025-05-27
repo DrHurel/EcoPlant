@@ -1,16 +1,20 @@
 package fr.hureljeremy.gitea.ecoplant.framework
 
-import retrofit2.Response
-import retrofit2.http.*
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -270,7 +274,7 @@ interface PlantNetApiService {
     suspend fun identifyPlantByUpload(
         @Path("project") project: String = "all",
         @Part images: List<MultipartBody.Part>,
-        @Part("organs") organs: List<RequestBody>? = null,
+        @Part("organs") organs: RequestBody,  // Changed to single RequestBody
         @retrofit2.http.Query("include-related-images") includeRelatedImages: Boolean? = false,
         @retrofit2.http.Query("no-reject") noReject: Boolean? = false,
         @retrofit2.http.Query("nb-results") nbResults: Int? = 10,
@@ -398,7 +402,7 @@ class PlantNetClient(
 
     suspend fun identifyPlantFromFiles(
         imageFiles: List<File>,
-        organs: List<Organ>? = null,
+        organs: List<Organ>,
         project: String = "all",
         includeRelatedImages: Boolean = false,
         noReject: Boolean = false,
@@ -411,14 +415,14 @@ class PlantNetClient(
             MultipartBody.Part.createFormData("images", file.name, requestBody)
         }
 
-        val organParts = organs?.map { organ ->
-            organ.value.toRequestBody("text/plain".toMediaType())
-        }
+        // Convert organs list to comma-separated string
+        val organsString = organs.joinToString(",") { it.value }
+        val organBody = organsString.toRequestBody("text/plain".toMediaType())
 
         apiService.identifyPlantByUpload(
             project = project,
             images = imageParts,
-            organs = organParts,
+            organs = organBody,
             includeRelatedImages = includeRelatedImages,
             noReject = noReject,
             nbResults = maxResults,
@@ -432,9 +436,10 @@ class PlantNetClient(
         apiService.getDailyQuota(day, apiKey)
     }
 
-    suspend fun getQuotaHistory(year: String? = null): kotlin.Result<List<QuotaInfo>> = safeApiCall {
-        apiService.getQuotaHistory(year, apiKey)
-    }
+    suspend fun getQuotaHistory(year: String? = null): kotlin.Result<List<QuotaInfo>> =
+        safeApiCall {
+            apiService.getQuotaHistory(year, apiKey)
+        }
 
     // Error handling wrapper
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): kotlin.Result<T> {

@@ -11,6 +11,8 @@ import fr.hureljeremy.gitea.ecoplant.framework.BaseService
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.framework.PlantNetClient
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -32,27 +34,44 @@ class PlantNetService : BaseService() {
             "PLANTNET_API_KEY",
             "2b10KhKYpR6P3Y4Y29bvfFHG"
         ) // tempo api key for development
-        client = PlantNetClient(API_KEY, true)
+        client = PlantNetClient("2b10KhKYpR6P3Y4Y29bvfFHG", true)
     }
 
-    @Throws(Exception::class)
-    suspend fun identifyPlant(imagePath: Uri, type: Organ): String {
+
+    suspend fun identifyPlant(imageUri: Uri, type: Organ): String {
         if (isIdentifing.get()) {
             return "Identification in progress, please wait."
         }
         isIdentifing.set(true)
 
         return try {
-            val path = File(imagePath.path ?: throw IllegalArgumentException("Invalid image path"))
-            val result = client.identifyPlantFromFiles(imageFiles = listOf(path), organs = listOf(type))
-            result.fold(
-                onSuccess = { response ->
-                    response.results.firstOrNull()?.species?.scientificName ?: "Unknown plant"
+            // Create a temporary file from the content URI
+            val tempFile = withContext(Dispatchers.IO) {
+                File.createTempFile("plant_image", ".jpg", applicationContext.cacheDir)
+            }
+            applicationContext.contentResolver.openInputStream(imageUri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val response = client.identifyPlantFromFiles(
+                imageFiles = listOf(tempFile),
+                organs = listOf(type),
+                maxResults = 1
+            )
+
+            // Delete the temporary file
+            tempFile.delete()
+
+            response.fold(
+                onSuccess = { result ->
+                    result.results.firstOrNull()?.species?.scientificName ?: "Unknown plant"
                 },
-                onFailure = { "No plant identified" }
+                onFailure = { "Error: ${it.message}" }
             )
         } catch (e: Exception) {
-            "Error identifying plant: ${e.message}"
+            "Error: ${e.message}"
         } finally {
             isIdentifing.set(false)
         }
@@ -67,4 +86,6 @@ class PlantNetService : BaseService() {
         }
         this.startActivity(intent)
     }
+
+    suspend fun getPlantScore(plant_name: String) {}
 }

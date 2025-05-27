@@ -29,6 +29,8 @@ class DisplayPlantInfoActivity : BaseActivity() {
             showSaveParcelDialog()
         }
 
+        findViewById<TextView>(R.id.plant_name).hint = savedInstanceState?.getString("PLANT_NAME") ?: "Unknown Plant"
+
         findViewById<Button>(R.id.delete_button).setOnClickListener {
             navigationService.navigate(this, "home")
         }

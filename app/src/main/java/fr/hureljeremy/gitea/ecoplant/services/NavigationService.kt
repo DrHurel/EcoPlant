@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant.services
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
 import fr.hureljeremy.gitea.ecoplant.framework.NavigationManager
@@ -14,9 +15,9 @@ class NavigationService : BaseService() {
     }
 
 
-    fun navigate(context: Context, route: String) {
+    fun navigate(context: Context, route: String,bundle: Bundle?= null) {
         try {
-            NavigationManager.getInstance().navigate(context, route)
+            NavigationManager.getInstance().navigate(context, route, bundle)
             Log.d("NavigationService", "Navigating to $route")
         } catch (e: IllegalArgumentException) {
             Log.e("NavigationService", "Navigation failed: ${e.message}")

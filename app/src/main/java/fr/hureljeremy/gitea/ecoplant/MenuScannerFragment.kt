@@ -13,6 +13,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.BaseFragment
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.services.CameraService
+import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +33,9 @@ class MenuScannerFragment : BaseFragment() {
 
     @Inject
     private lateinit var cameraService: CameraService
+
+    @Inject
+    private lateinit var navigationService: NavigationService
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +58,7 @@ class MenuScannerFragment : BaseFragment() {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val res = plantNetService.identifyPlant(imagePath, Organ.BARK)
                     withContext(Dispatchers.Main) {
-                        navigateToDisplayPlantInfo("bark")
+                        navigateToDisplayPlantInfo("bark", res)
                     }
                 }
             } else {
@@ -72,9 +76,8 @@ class MenuScannerFragment : BaseFragment() {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val res = plantNetService.identifyPlant(imagePath, Organ.FLOWER)
                     Log.d(TAG, "Flower identification result: $res")
-                    withContext(Dispatchers.Main) {
-                        navigateToDisplayPlantInfo("flower")
-                    }
+                    navigateToDisplayPlantInfo("flower", res)
+
                 }
             } else {
                 parentFragmentManager.beginTransaction()
@@ -89,9 +92,7 @@ class MenuScannerFragment : BaseFragment() {
 
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val res = plantNetService.identifyPlant(imagePath, Organ.LEAF)
-                    withContext(Dispatchers.Main) {
-                        navigateToDisplayPlantInfo("leaf")
-                    }
+                    navigateToDisplayPlantInfo("leaf", res)
                 }
             } else {
                 parentFragmentManager.beginTransaction()
@@ -105,9 +106,8 @@ class MenuScannerFragment : BaseFragment() {
             if (imagePath != null) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val res = plantNetService.identifyPlant(imagePath, Organ.FRUIT)
-                    withContext(Dispatchers.Main) {
-                        navigateToDisplayPlantInfo("fruit")
-                    }
+                    navigateToDisplayPlantInfo("fruit", res)
+
                 }
 
             } else {
@@ -120,10 +120,14 @@ class MenuScannerFragment : BaseFragment() {
 
     }
 
-    private fun navigateToDisplayPlantInfo(plantPart: String) {
-        val intent = Intent(requireContext(), DisplayPlantInfoActivity::class.java)
-        intent.putExtra("PLANT_PART", plantPart)
-        startActivity(intent)
+    private fun navigateToDisplayPlantInfo(plantPart: String, plantName: String = "Unknown Plant") {
+        navigationService.navigate(requireContext(), "plant_info", Bundle().apply {
+            putString("PLANT_PART", plantPart)
+            putString(
+                "PLANT_NAME",
+                plantName
+            ) // Placeholder, replace with actual plant name if available
+        })
     }
 
 }
