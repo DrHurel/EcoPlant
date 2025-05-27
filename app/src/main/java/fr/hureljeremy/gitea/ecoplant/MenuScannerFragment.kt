@@ -18,6 +18,7 @@ import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.toString
 
 class MenuScannerFragment : BaseFragment() {
     override fun onCreateView(
@@ -100,6 +101,7 @@ class MenuScannerFragment : BaseFragment() {
                 "PLANT_DESCRIPTION",
                 identificationResult.description
             )
+            putString("PLANT_IMAGE_URI", cameraService.getLastImageUri()?.toString())
         })
     }
 

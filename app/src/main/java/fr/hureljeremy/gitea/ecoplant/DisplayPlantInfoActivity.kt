@@ -17,6 +17,9 @@ import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
+import android.net.Uri
+import android.widget.ImageView
+import androidx.core.net.toUri
 
 @Page(route = "plant_info", isDefault = false)
 class DisplayPlantInfoActivity : BaseActivity() {
@@ -30,6 +33,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
     setContentView(R.layout.display_plant_info_page)
 
     val plantName = intent.extras?.getString("PLANT_NAME") ?: "Unknown Plant"
+
+    val imageUriString = intent.extras?.getString("PLANT_IMAGE_URI")
+    imageUriString?.let { uriString ->
+        val imageUri = uriString.toUri()
+        findViewById<ImageView>(R.id.plant_image).setImageURI(imageUri)
+        //modifier le scaleType pour que l'image soit centrée et recadrée
+        findViewById<ImageView>(R.id.plant_image).scaleType = ImageView.ScaleType.CENTER_CROP
+    }
 
     findViewById<TextView>(R.id.plant_name).hint = plantName
     findViewById<TextView>(R.id.plant_descriptions).hint = intent.extras?.getString("PLANT_DESCRIPTION") ?: "No description available"
