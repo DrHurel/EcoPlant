@@ -42,5 +42,10 @@
     <string name="minimum_fiability_score">Minimum fiability score</string>
     <string name="public_">public</string>
     <string name="private_">private</string>
-    <string name="manage_users">Manage Users</string> <!-- Should be replace with a real value store in a secret  -->
+    <string name="manage_users">Manage Users</string>
+    <string name="create_account">Create account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="login">Login</string> <!-- Should be replace with a real value store in a secret  -->
 </resources>
