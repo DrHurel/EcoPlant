@@ -9,17 +9,20 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
-import android.net.Uri
-import android.widget.ImageView
-import androidx.core.net.toUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Page(route = "plant_info", isDefault = false)
 class DisplayPlantInfoActivity : BaseActivity() {
@@ -28,36 +31,71 @@ class DisplayPlantInfoActivity : BaseActivity() {
 
     @Inject
     private lateinit var plantNetService: PlantNetService
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.display_plant_info_page)
 
-    val plantName = intent.extras?.getString("PLANT_NAME") ?: "Unknown Plant"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.display_plant_info_page)
 
-    val imageUriString = intent.extras?.getString("PLANT_IMAGE_URI")
-    imageUriString?.let { uriString ->
-        val imageUri = uriString.toUri()
-        findViewById<ImageView>(R.id.plant_image).setImageURI(imageUri)
-        //modifier le scaleType pour que l'image soit centrée et recadrée
-        findViewById<ImageView>(R.id.plant_image).scaleType = ImageView.ScaleType.CENTER_CROP
+        val plantName = intent.extras?.getString("PLANT_NAME") ?: "Unknown Plant"
+
+        val imageUriString = intent.extras?.getString("PLANT_IMAGE_URI")
+        imageUriString?.let { uriString ->
+            val imageUri = uriString.toUri()
+            findViewById<ImageView>(R.id.plant_image).setImageURI(imageUri)
+            //modifier le scaleType pour que l'image soit centrée et recadrée
+            findViewById<ImageView>(R.id.plant_image).scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+
+        var description =
+            intent.extras?.getString("PLANT_DESCRIPTION") ?: "No description available"
+
+        // Ajouter une note sur la provenance de la description
+
+        findViewById<TextView>(R.id.plant_name).hint = plantName
+        findViewById<TextView>(R.id.plant_descriptions).hint = description
+
+        //start coroutine to fetch plant score
+        lifecycleScope.launch(Dispatchers.IO) {
+            val plant_service = plantNetService.getPlantScore(plantName)
+
+            plant_service.fold(
+                onSuccess = { plantServices ->
+                    for (plant in plantServices) {
+                        description += "\n\nThis plant provide as a service: ${plant.service}\n" +
+                                "It has a score of ${plant.value} out of 100.\n" +
+                                "This information has a reliability of ${plant.reliability} out of 100.\n"
+                    }
+
+                    if (plantServices.isEmpty()) {
+                        description += "\n\nNo plant service details available."
+                    }
+
+                },
+                onFailure = { error ->
+                    // Handle the error case
+                    description += "\n\nError fetching plant service details: ${error.message}"
+                }
+            )
+
+            withContext(Dispatchers.Main) {
+                findViewById<TextView>(R.id.plant_descriptions).hint = description
+            }
+
+        }
+        findViewById<Button>(R.id.save_button).setOnClickListener {
+            showSaveParcelDialog()
+        }
+
+        findViewById<Button>(R.id.delete_button).setOnClickListener {
+            navigationService.navigate(this, "home")
+        }
+
+
+        findViewById<ImageButton>(R.id.know_more_button).setOnClickListener {
+            plantNetService.displayPlantDetails(plantName)
+        }
     }
 
-    findViewById<TextView>(R.id.plant_name).hint = plantName
-    findViewById<TextView>(R.id.plant_descriptions).hint = intent.extras?.getString("PLANT_DESCRIPTION") ?: "No description available"
-
-    findViewById<Button>(R.id.save_button).setOnClickListener {
-        showSaveParcelDialog()
-    }
-
-    findViewById<Button>(R.id.delete_button).setOnClickListener {
-        navigationService.navigate(this, "home")
-    }
-
-
-    findViewById<ImageButton>(R.id.know_more_button).setOnClickListener {
-        plantNetService.displayPlantDetails(plantName)
-    }
-}
     private fun showSaveParcelDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)  // Supprimer la barre de titre
@@ -73,9 +111,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         // Création d'un adaptateur personnalisé utilisant spinner_item.xml
         val adapter = object : ArrayAdapter<String>(
-            this,
-            R.layout.spinner_item,
-            parcelles
+            this, R.layout.spinner_item, parcelles
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getView(position, convertView, parent)
@@ -85,9 +121,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
             }
 
             override fun getDropDownView(
-                position: Int,
-                convertView: View?,
-                parent: ViewGroup
+                position: Int, convertView: View?, parent: ViewGroup
             ): View {
                 val view = super.getDropDownView(position, convertView, parent)
                 val textView = view as TextView
@@ -103,10 +137,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         var selectedParcel = parcelles[0] // Valeur par défaut
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 selectedParcel = parcelles[position]
             }
@@ -127,9 +158,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         btnConfirm.setOnClickListener {
             // Affichage simple
             Toast.makeText(
-                this,
-                "Plante sauvegardée dans la parcelle: $selectedParcel",
-                Toast.LENGTH_SHORT
+                this, "Plante sauvegardée dans la parcelle: $selectedParcel", Toast.LENGTH_SHORT
             ).show()
 
 

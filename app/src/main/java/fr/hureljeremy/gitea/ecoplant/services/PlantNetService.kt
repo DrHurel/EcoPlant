@@ -8,14 +8,14 @@ import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import fr.hureljeremy.gitea.ecoplant.R
+import fr.hureljeremy.gitea.ecoplant.framework.AppDatabase
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.framework.PlantNetClient
+import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -78,14 +78,18 @@ class PlantNetService : BaseService() {
                     result.results.firstOrNull()?.species?.genus?.let { genus ->
                         Log.d("PlantNetService", "Identified genus: $genus")
                     }
-                    val name = result.results.firstOrNull()?.species?.scientificNameWithoutAuthor ?: "Unknown plant"
-                    val description  = "$name is a plant of the family ${result.results.firstOrNull()?.species?.family ?: "Unknown family"}. It is commonly known as " +
-                        (result.results.firstOrNull()?.species?.commonNames?.firstOrNull() ?: "Unknown common name") + "."
-                    result.results.firstOrNull()?.species?.commonNames?.firstOrNull() ?: "Unknown plant"
+                    val name = result.results.firstOrNull()?.species?.scientificNameWithoutAuthor
+                        ?: "Unknown plant"
+                    val description =
+                        "$name is a plant of the family ${result.results.firstOrNull()?.species?.family ?: "Unknown family"}. It is commonly known as " +
+                                (result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
+                                    ?: "Unknown common name") + "."
+                    result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
+                        ?: "Unknown plant"
 
                     Result.success(PlantIdentificationResult(name, description))
 
-                 },
+                },
                 onFailure = {
                     Log.e("PlantNetService", "Identification failed", it)
                     Result.failure(it)
@@ -109,18 +113,19 @@ class PlantNetService : BaseService() {
         this.startActivity(intent)
     }
 
-    suspend fun getPlantScore(plantName: String) {
-        return withContext(Dispatchers.IO) {
-            try {
-                val data = hashMapOf("plant_name" to plantName)
-                val result = functions
-                    .getHttpsCallable("getPlantScore")
-                    .call(data)
-                    .await()
-                result.data as String
-            } catch (e: Exception) {
-                "Error: ${e.message}"
-            }
+
+
+suspend fun getPlantScore(plantName: String): Result<List<ServiceEntry>> {
+    return withContext(Dispatchers.IO) {
+        try {
+            val database = AppDatabase.getInstance(applicationContext)
+            val serviceDao = database.serviceDao()
+            val entries = serviceDao.getBySpecies(plantName)
+            Result.success(entries)
+        } catch (e: Exception) {
+            Log.e("PlantNetService", "Erreur lors de la récupération des scores de la plante", e)
+            Result.failure(e)
         }
     }
+}
 }
