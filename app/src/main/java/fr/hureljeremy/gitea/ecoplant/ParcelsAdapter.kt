@@ -40,13 +40,13 @@ class ParcelsAdapter(private val parcelItems: List<ParcelItem>, private val onIt
 
         // Configurer les services
         if (item.services.isNotEmpty() && item.services.size >= 1) {
-            holder.service1.hint = item.services[0]
+            holder.service1.hint = item.services[0].service
         }
         if (item.services.size >= 2) {
-            holder.service2.hint = item.services[1]
+            holder.service2.hint = item.services[1].service
         }
         if (item.services.size >= 3) {
-            holder.service3.hint = item.services[2]
+            holder.service3.hint = item.services[2].service
         }
 
         // Configurer le score de fiabilité

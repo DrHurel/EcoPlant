@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant.framework
 
 import android.content.Context
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
@@ -26,13 +27,25 @@ data class ServiceEntry(
     val culturalCondition: String
 )
 
+@Entity(
+    tableName = "identification_results",
+    primaryKeys = ["species", "date"]
+)
+data class SavedIdentificationResult(
+    val species: String,
+    val date: String,
+    val description: String,
+    @ColumnInfo(name = "image_uri")
+    val imageUri: Uri,
+)
+
 @Dao
 interface ServiceDao {
     @Query("SELECT * FROM plant_score")
     fun getAll(): List<ServiceEntry>
 
     @Query("SELECT * FROM plant_score WHERE species = :species AND reliability >= :reliability")
-    fun getBySpecies(species: String,reliability: Double): List<ServiceEntry>
+    fun getBySpecies(species: String, reliability: Double): List<ServiceEntry>
 
     @Query("SELECT service FROM plant_score GROUP BY service ")
     fun getAllServiceNames(): List<String>
@@ -45,7 +58,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun serviceDao(): ServiceDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
