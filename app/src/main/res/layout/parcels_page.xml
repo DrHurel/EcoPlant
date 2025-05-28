@@ -33,7 +33,6 @@
             android:gravity="center_vertical"
             android:padding="8dp">
 
-            <!-- ImageButton à gauche -->
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,6 +62,18 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/add_parcel_button"
+                android:src="@drawable/plus"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/light_cream"
+                android:contentDescription="@string/create_a_new_parcel"
+                android:importantForAccessibility="yes" />
+
+
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
