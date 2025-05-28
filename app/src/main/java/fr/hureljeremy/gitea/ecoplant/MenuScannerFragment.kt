@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import fr.hureljeremy.gitea.ecoplant.framework.BaseFragment
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
+import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.services.CameraService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
@@ -90,12 +91,12 @@ class MenuScannerFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToDisplayPlantInfo(plantPart: String,identificationResult: PlantNetService.PlantIdentificationResult ) {
+    private fun navigateToDisplayPlantInfo(plantPart: String,identificationResult: SavedIdentificationResult) {
         navigationService.navigate(requireContext(), "plant_info", Bundle().apply {
             putString("PLANT_PART", plantPart)
             putString(
                 "PLANT_NAME",
-                identificationResult.name
+                identificationResult.species
             )
             putString(
                 "PLANT_DESCRIPTION",

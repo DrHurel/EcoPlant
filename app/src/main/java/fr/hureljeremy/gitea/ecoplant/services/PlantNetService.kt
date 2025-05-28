@@ -10,8 +10,10 @@ import com.google.firebase.storage.ktx.storage
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.AppDatabase
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
+import fr.hureljeremy.gitea.ecoplant.framework.IdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.framework.PlantNetClient
+import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 import kotlinx.coroutines.Dispatchers
@@ -41,12 +43,9 @@ class PlantNetService : BaseService() {
     }
 
 
-    data class PlantIdentificationResult(
-        val name: String,
-        val description: String
-    )
 
-    suspend fun identifyPlant(imageUri: Uri, type: Organ): Result<PlantIdentificationResult> {
+
+    suspend fun identifyPlant(imageUri: Uri, type: Organ): Result<SavedIdentificationResult> {
         if (isIdentifing.get()) {
             Log.w("PlantNetService", "Identification already in progress")
             return Result.failure(IllegalStateException("Identification already in progress"))
@@ -87,7 +86,12 @@ class PlantNetService : BaseService() {
                     result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
                         ?: "Unknown plant"
 
-                    Result.success(PlantIdentificationResult(name, description))
+                    Result.success(SavedIdentificationResult(
+                        species = name,
+                        date = System.currentTimeMillis().toString(),
+                        description = description,
+                        imageUri = imageUri
+                    ))
 
                 },
                 onFailure = {
@@ -114,7 +118,10 @@ class PlantNetService : BaseService() {
     }
 
 
-    suspend fun getPlantScore(plantName: String,relability: Double = 0.0): Result<List<ServiceEntry>> {
+    suspend fun getPlantScore(
+        plantName: String,
+        relability: Double = 0.0
+    ): Result<List<ServiceEntry>> {
         return withContext(Dispatchers.IO) {
             try {
                 val database = AppDatabase.getInstance(applicationContext)
@@ -133,8 +140,7 @@ class PlantNetService : BaseService() {
     }
 
 
-
-    interface  ParcelRepository {
+    interface ParcelRepository {
         suspend fun getParcels(): Result<List<Parcel>>
         suspend fun getParcelById(parcelId: String): Result<Parcel>
     }
@@ -143,13 +149,16 @@ class PlantNetService : BaseService() {
         val id: String
         val name: String
         val description: String
-        fun getPlants() : Iterable<String>
+        fun getPlants(): Iterable<String>
     }
-
-    suspend fun getParcelServices(parcelId: String, relability : Double = 0.0 ): Result<List<ServiceEntry>> {
+/*
+    suspend fun getParcelServices(
+        parcelId: String,
+        relability: Double = 0.0
+    ): Result<List<ServiceEntry>> {
         return withContext(Dispatchers.IO) {
 
-            ParcelRepository.getParcelById(parcelId).fold(
+          ParcelRepository.getParcelById(parcelId).fold(
                 onSuccess = { parcel ->
                     val plantNames = parcel.getPlants()
                     val database = AppDatabase.getInstance(applicationContext)
@@ -166,5 +175,5 @@ class PlantNetService : BaseService() {
                 }
             )
         }
-    }
+    }*/
 }
