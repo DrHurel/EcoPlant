@@ -31,8 +31,12 @@ interface ServiceDao {
     @Query("SELECT * FROM plant_score")
     fun getAll(): List<ServiceEntry>
 
-    @Query("SELECT * FROM plant_score WHERE species = :species")
-    fun getBySpecies(species: String): List<ServiceEntry>
+    @Query("SELECT * FROM plant_score WHERE species = :species AND reliability >= :reliability")
+    fun getBySpecies(species: String,reliability: Double): List<ServiceEntry>
+
+    @Query("SELECT service FROM plant_score GROUP BY service ")
+    fun getAllServiceNames(): List<String>
+
 }
 
 

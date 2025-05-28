@@ -42,10 +42,10 @@ class ParcelsActivity : BaseActivity() {
 
     private fun createSampleData(): List<ParcelItem> {
         return listOf(
-            ParcelItem(1, "Parcelle A", listOf("Arrosage", "Taille", "Fertilisation"), 70, true),
-            ParcelItem(2, "Parcelle B", listOf("Arrosage", "Taille"), 50, false),
-            ParcelItem(3, "Parcelle C", listOf("Fertilisation"), 60, true),
-            ParcelItem(4, "Parcelle D", listOf("Arrosage", "Désherbage", "Fertilisation"), 80, false)
+            ParcelItem(1, "Parcelle A", listOf(), 70.0, true),
+            ParcelItem(2, "Parcelle B", listOf(), 50.0, false),
+            ParcelItem(3, "Parcelle C", listOf(), 60.0, true),
+            ParcelItem(4, "Parcelle D", listOf(), 80.0, false)
         )
     }
 }

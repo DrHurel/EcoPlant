@@ -81,7 +81,7 @@ class PlantNetService : BaseService() {
                     val name = result.results.firstOrNull()?.species?.scientificNameWithoutAuthor
                         ?: "Unknown plant"
                     val description =
-                        "$name is a plant of the family ${result.results.firstOrNull()?.species?.family ?: "Unknown family"}. It is commonly known as " +
+                        "$name is a plant of the family ${result.results.firstOrNull()?.species?.family?.scientificNameWithoutAuthor ?: "Unknown family"}. It is commonly known as " +
                                 (result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
                                     ?: "Unknown common name") + "."
                     result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
@@ -114,18 +114,57 @@ class PlantNetService : BaseService() {
     }
 
 
-
-suspend fun getPlantScore(plantName: String): Result<List<ServiceEntry>> {
-    return withContext(Dispatchers.IO) {
-        try {
-            val database = AppDatabase.getInstance(applicationContext)
-            val serviceDao = database.serviceDao()
-            val entries = serviceDao.getBySpecies(plantName)
-            Result.success(entries)
-        } catch (e: Exception) {
-            Log.e("PlantNetService", "Erreur lors de la récupération des scores de la plante", e)
-            Result.failure(e)
+    suspend fun getPlantScore(plantName: String,relability: Double = 0.0): Result<List<ServiceEntry>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = AppDatabase.getInstance(applicationContext)
+                val serviceDao = database.serviceDao()
+                val entries = serviceDao.getBySpecies(plantName, relability)
+                Result.success(entries)
+            } catch (e: Exception) {
+                Log.e(
+                    "PlantNetService",
+                    "Erreur lors de la récupération des scores de la plante",
+                    e
+                )
+                Result.failure(e)
+            }
         }
     }
-}
+
+
+
+    interface  ParcelRepository {
+        suspend fun getParcels(): Result<List<Parcel>>
+        suspend fun getParcelById(parcelId: String): Result<Parcel>
+    }
+
+    interface Parcel {
+        val id: String
+        val name: String
+        val description: String
+        fun getPlants() : Iterable<String>
+    }
+
+    suspend fun getParcelServices(parcelId: String, relability : Double = 0.0 ): Result<List<ServiceEntry>> {
+        return withContext(Dispatchers.IO) {
+
+            ParcelRepository.getParcelById(parcelId).fold(
+                onSuccess = { parcel ->
+                    val plantNames = parcel.getPlants()
+                    val database = AppDatabase.getInstance(applicationContext)
+                    val serviceDao = database.serviceDao()
+                    val services = mutableListOf<ServiceEntry>()
+                    for (plantName in plantNames) {
+                        services.addAll(serviceDao.getBySpecies(plantName, relability))
+                    }
+                    Result.success(services)
+                },
+                onFailure = { error ->
+                    Log.e("PlantNetService", "Error fetching parcel services", error)
+                    Result.failure(error)
+                }
+            )
+        }
+    }
 }

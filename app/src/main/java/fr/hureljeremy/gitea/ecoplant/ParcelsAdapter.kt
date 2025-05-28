@@ -50,7 +50,7 @@ class ParcelsAdapter(private val parcelItems: List<ParcelItem>, private val onIt
         }
 
         // Configurer le score de fiabilité
-        holder.fiabilityScoreInput.hint = item.minimumFiabilityScore.toString()
+        holder.fiabilityScoreInput.hint = item.minimumReliabilityScore.toString()
 
         // Configurer le switch de visibilité
         holder.visibilitySwitch.isChecked = item.isPublic
