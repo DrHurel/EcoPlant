@@ -18,6 +18,9 @@
         android:theme="@style/Theme.EcoPlant"
         tools:targetApi="31">
         <activity
+            android:name=".FindParcelActivity"
+            android:exported="false" />
+        <activity
             android:name=".ParcelsActivity"
             android:exported="false" />
         <activity

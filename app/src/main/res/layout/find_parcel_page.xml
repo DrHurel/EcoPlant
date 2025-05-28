@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/olive_color">
+
+    <!-- Image en arrière-plan -->
+    <ImageView
+        android:id="@+id/pic_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:scaleType="center"
+        android:src="@drawable/background_leaf" />
+
+    <!-- Contenu principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginHorizontal="25dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_background_low"
+            android:backgroundTint="@color/beige_color"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/home_button"
+                android:src="@drawable/home"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/light_cream"
+                android:contentDescription="@string/home"
+                android:importantForAccessibility="yes" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/find_parcels"
+                android:textColorHint="@color/black"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/joti_one"
+                android:id="@+id/my_parcels_title"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_background_low"
+            android:backgroundTint="@color/light_cream"
+            android:layout_marginTop="16dp"
+            android:padding="8dp">
+
+            <EditText
+                android:id="@+id/search_parcels"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background"
+                android:fontFamily="@font/joti_one"
+                android:backgroundTint="@color/white"
+                android:textColorHint="@color/black"
+                android:hint="@string/search_parcels"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:maxLines="1" />
+
+            <ImageButton
+                android:id="@+id/search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_search"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/beige_color"
+                android:padding="5dp"
+                android:contentDescription="@string/search"
+                android:importantForAccessibility="yes" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/find_parcels_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp" />
+
+
+    </LinearLayout>
+</FrameLayout>

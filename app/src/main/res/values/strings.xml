@@ -48,5 +48,8 @@
     <string name="password">Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="login">Login</string>
-    <string name="create_a_new_parcel">Create a new parcel</string> <!-- Should be replace with a real value store in a secret  -->
+    <string name="create_a_new_parcel">Create a new parcel</string>
+    <string name="find_parcels">Find Parcels</string>
+    <string name="search_parcels">Search parcels</string>
+    <string name="search">Search</string> <!-- Should be replace with a real value store in a secret  -->
 </resources>

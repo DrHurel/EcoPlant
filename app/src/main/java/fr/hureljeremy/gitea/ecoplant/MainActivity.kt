@@ -40,5 +40,9 @@ class MainActivity  : BaseActivity() {
         findViewById<ImageButton>(R.id.my_parcels_button).setOnClickListener {
             navigationService.navigate(this, "parcels")
         }
+
+        findViewById<ImageButton>(R.id.search_button).setOnClickListener {
+            navigationService.navigate(this, "find_parcel")
+        }
     }
 }
