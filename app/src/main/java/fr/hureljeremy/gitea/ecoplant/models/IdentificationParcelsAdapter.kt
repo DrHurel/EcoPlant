@@ -1,10 +1,11 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.models
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import fr.hureljeremy.gitea.ecoplant.R
 
 class IdentificationParcelsAdapter(private val items: List<IdentificationParcelItem>) :
     RecyclerView.Adapter<IdentificationParcelsAdapter.ViewHolder>() {

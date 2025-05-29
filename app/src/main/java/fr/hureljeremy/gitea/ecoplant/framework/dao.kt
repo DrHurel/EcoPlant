@@ -5,8 +5,11 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Junction
 import androidx.room.Query
+import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import fr.hureljeremy.gitea.ecoplant.R
@@ -39,6 +42,47 @@ data class SavedIdentificationResult(
     val imageUri: Uri,
 )
 
+@Entity(
+    tableName = "parcel_items",
+    primaryKeys = ["id"]
+)
+data class ParcelItem(
+    val id: Long,
+    val title: String,
+    val minimumReliabilityScore: Double = 50.0,
+    val isPublic: Boolean = false
+)
+
+@Entity(
+    tableName = "parcel_item_results",
+    primaryKeys = ["parcelId", "species", "date"]
+)
+data class ParcelItemResultCrossRef(
+    val parcelId: Long,
+    val species: String,
+    val date: String
+)
+
+
+data class ParcelWithResults(
+    @Embedded val parcel: ParcelItem,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "species",  // Must match entity's key
+        associateBy = Junction(
+            value = ParcelItemResultCrossRef::class,
+            parentColumn = "parcelId",
+            entityColumn = "species" // Room will use this with additional filtering
+        )
+    )
+    val services: List<SavedIdentificationResult>
+
+)
+
+
+
+
 @Dao
 interface ServiceDao {
     @Query("SELECT * FROM plant_score")
@@ -50,8 +94,27 @@ interface ServiceDao {
     @Query("SELECT service FROM plant_score GROUP BY service ")
     fun getAllServiceNames(): List<String>
 
-}
+    @Query("SELECT * FROM identification_results WHERE species = :species AND date = :date")
+    fun getIdentificationResult(species: String, date: String): SavedIdentificationResult?
 
+    @Query("SELECT * FROM identification_results WHERE species = :species")
+    fun getIdentificationResultsBySpecies(species: String): List<SavedIdentificationResult>
+
+    @Query("SELECT * FROM parcel_items")
+    fun getAllParcels(): List<ParcelItem>
+
+    @Query("SELECT * FROM parcel_items WHERE id = :id")
+    fun getParcelById(id: Long): ParcelWithResults?
+
+    @Query("SELECT * FROM parcel_items WHERE isPublic = 1")
+    fun getPublicParcels(): List<ParcelItem>
+
+
+
+
+
+
+}
 
 @Database(entities = [ServiceEntry::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
@@ -90,3 +153,4 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+

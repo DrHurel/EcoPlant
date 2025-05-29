@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @ServiceProvider
 class PlantNetService : BaseService() {
-    private val API_URL = "https://my-api.plantnet.org/"
     private lateinit var API_KEY: String
     private lateinit var client: PlantNetClient
     private val storage = Firebase.storage
@@ -35,11 +34,7 @@ class PlantNetService : BaseService() {
         super.onCreate()
         // Access resources through context
         API_KEY = this.resources.getString(R.string.plantnet_api_key)
-        API_KEY.replace(
-            "PLANTNET_API_KEY",
-            "2b10KhKYpR6P3Y4Y29bvfFHG"
-        ) // tempo api key for development
-        client = PlantNetClient("2b10KhKYpR6P3Y4Y29bvfFHG", true)
+        client = PlantNetClient("2b10KhKYpR6P3Y4Y29bvfFHG", true)  // temp api key for development
     }
 
 

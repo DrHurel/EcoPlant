@@ -1,13 +1,15 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
 import android.widget.ImageButton
+import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
 
+//No model needed
 @Page(route = "home", isDefault = true)
 class MainActivity  : BaseActivity() {
 

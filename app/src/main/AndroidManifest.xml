@@ -18,13 +18,13 @@
         android:theme="@style/Theme.EcoPlant"
         tools:targetApi="31">
         <activity
-            android:name=".FindParcelActivity"
+            android:name=".pages.FindParcelActivity"
             android:exported="false" />
         <activity
-            android:name=".ParcelsActivity"
+            android:name=".pages.ParcelsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".pages.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,20 +33,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ScannerActivity"
+            android:name=".pages.ScannerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".DisplayPlantInfoActivity"
+            android:name=".pages.DisplayPlantInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".HistoryActivity"
+            android:name=".pages.HistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".HistoryMapActivity"
+            android:name=".pages.HistoryMapActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingActivity"
+            android:name=".pages.SettingActivity"
             android:exported="false" />
 
         <service

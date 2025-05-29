@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.models
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import fr.hureljeremy.gitea.ecoplant.R
 
 class ParcelsAdapter(private val parcelItems: List<ParcelItem>, private val onItemClick: ((ParcelItem) -> Unit)? = null) :
     RecyclerView.Adapter<ParcelsAdapter.ViewHolder>() {

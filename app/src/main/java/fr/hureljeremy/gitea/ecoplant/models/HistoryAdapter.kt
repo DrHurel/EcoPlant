@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.models
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import fr.hureljeremy.gitea.ecoplant.R
 
-class HistoryAdapter(private val historyItems: List<HistoryItem>,private val onItemClick: ((HistoryItem) -> Unit)? = null) :
+class HistoryAdapter(private val historyItems: List<HistoryItem>, private val onItemClick: ((HistoryItem) -> Unit)? = null) :
 
     RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 

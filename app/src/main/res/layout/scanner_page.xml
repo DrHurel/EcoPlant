@@ -45,7 +45,7 @@
         <!-- Fragment pour faire des changments de menu-->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/camera_buttons_fragment"
-            android:name="fr.hureljeremy.gitea.ecoplant.CameraButtonsFragment"
+            android:name="fr.hureljeremy.gitea.ecoplant.components.CameraButtonsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

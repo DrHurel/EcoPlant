@@ -1,13 +1,16 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fr.hureljeremy.gitea.ecoplant.models.HistoryAdapter
+import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.models.HistoryItem
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
 

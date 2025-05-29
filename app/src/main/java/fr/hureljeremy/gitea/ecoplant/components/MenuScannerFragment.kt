@@ -1,14 +1,13 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.components
 
-import android.content.ContentValues.TAG
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.lifecycle.lifecycleScope
+import fr.hureljeremy.gitea.ecoplant.R
+import fr.hureljeremy.gitea.ecoplant.pages.ScannerActivity
 import fr.hureljeremy.gitea.ecoplant.framework.BaseFragment
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
@@ -18,9 +17,9 @@ import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.toString
 
+
+//No model needed
 class MenuScannerFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,7 +76,6 @@ class MenuScannerFragment : BaseFragment() {
         if (imagePath != null) {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 val res = plantNetService.identifyPlant(imagePath, organ)
-                Log.d(TAG, "Flower identification result: $res")
                 if (res.isFailure) {
                     navigationService.navigateToDefault(requireContext())
                 }

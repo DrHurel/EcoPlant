@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.app.Dialog
 import android.os.Bundle
@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
@@ -56,17 +57,17 @@ class DisplayPlantInfoActivity : BaseActivity() {
 
         //start coroutine to fetch plant score
         lifecycleScope.launch(Dispatchers.IO) {
-            val plant_service = plantNetService.getPlantScore(plantName)
+            val plantServices = plantNetService.getPlantScore(plantName)
 
-            plant_service.fold(
-                onSuccess = { plantServices ->
-                    for (plant in plantServices) {
-                        description += "\n\nThis plant provide as a service: ${plant.service}\n" +
-                                "It has a score of ${plant.value} out of 100.\n" +
-                                "This information has a reliability of ${plant.reliability} out of 100.\n"
+            plantServices.fold(
+                onSuccess = { services ->
+                    for (serviceEntry in services) {
+                        description += "\n\nThis plant provide as a service: ${serviceEntry.service}\n" +
+                                "It has a score of ${serviceEntry.value} out of 100.\n" +
+                                "This information has a reliability of ${serviceEntry.reliability} out of 100.\n"
                     }
 
-                    if (plantServices.isEmpty()) {
+                    if (services.isEmpty()) {
                         description += "\n\nNo plant service details available."
                     }
 

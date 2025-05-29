@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.models
 
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 

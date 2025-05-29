@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.Manifest
 import android.content.Intent
@@ -10,6 +10,8 @@ import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import fr.hureljeremy.gitea.ecoplant.R
+import fr.hureljeremy.gitea.ecoplant.components.MenuScannerFragment
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page

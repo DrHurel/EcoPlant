@@ -1,4 +1,4 @@
-package fr.hureljeremy.gitea.ecoplant
+package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -7,9 +7,12 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fr.hureljeremy.gitea.ecoplant.models.FindParcelAdapter
+import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.models.FindParcelItem
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
 @Page(route = "find_parcel", isDefault = false)
