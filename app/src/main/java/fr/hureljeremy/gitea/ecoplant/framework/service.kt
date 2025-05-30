@@ -36,13 +36,19 @@ class ServiceLocator private constructor() {
 
     private fun discoverServices(packages: Array<out String>) {
         packages.forEach { packageName ->
-            val classLoader = Thread.currentThread().contextClassLoader
             try {
+                val classLoader = Thread.currentThread().contextClassLoader
                 val classes = getClassesInPackage(packageName, classLoader)
-                classes.forEach { clazz ->
-                    val kClass = clazz.kotlin
-                    if (kClass.hasAnnotation<ServiceProvider>()) {
-                        registerService(kClass)
+                for (clazz in classes) {
+                    try {
+                        // Utiliser Java reflection pour vérifier l'annotation
+                        val annotation = clazz.getAnnotation(ServiceProvider::class.java)
+                        if (annotation != null) {
+                            registerService(clazz.kotlin)
+                        }
+                    } catch (e: Exception) {
+                        // Ignorer les classes qui ne peuvent pas être traitées
+                        continue
                     }
                 }
             } catch (e: Exception) {
@@ -116,7 +122,9 @@ class ServiceLocator private constructor() {
                                 if (!entryClass.isInterface &&
                                     !entryClass.isEnum &&
                                     !entryClass.isSynthetic &&
-                                    !entryClass.name.contains("$")) {
+                                    !entryClass.name.contains("$") &&
+                                    !entryClass.name.endsWith("Kt") // Exclure les fichiers façades Kotlin
+                                ) {
                                     classes.add(entryClass)
                                 }
                             } catch (e: ClassNotFoundException) {
@@ -154,7 +162,7 @@ class ServiceLocator private constructor() {
             if (property.hasAnnotation<Inject>()) {
                 property.isAccessible = true
                 val serviceProvider = property.returnType.classifier as? KClass<*> ?: continue
-                val instance = getService(serviceProvider)
+                val instance = getService(serviceProvider as KClass<Any>)
                 try {
                     (property as? KMutableProperty1<Any, Any?>)?.set(target, instance)
                 } catch (e: Exception) {
@@ -190,7 +198,8 @@ abstract class BaseService : Service() {
             if (property.hasAnnotation<Inject>()) {
                 property.isAccessible = true
                 val serviceProvider = property.returnType.classifier as? KClass<*> ?: continue
-                val instance = ServiceLocator.getInstance().getService(serviceProvider)
+                val instance =
+                    ServiceLocator.getInstance().getService(serviceProvider as KClass<Any>)
                 try {
                     (property as? KMutableProperty1<BaseService, Any?>)?.set(this, instance)
                 } catch (e: Exception) {

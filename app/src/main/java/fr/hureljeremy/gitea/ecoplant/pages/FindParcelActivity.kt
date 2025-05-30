@@ -3,20 +3,20 @@ package fr.hureljeremy.gitea.ecoplant.pages
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import fr.hureljeremy.gitea.ecoplant.models.FindParcelAdapter
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
+import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.models.FindParcelAdapter
 import fr.hureljeremy.gitea.ecoplant.models.FindParcelItem
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
-@Page(route = "find_parcel", isDefault = false)
-class FindParcelActivity :  BaseActivity() {
+@Page(route = "find_parcel", layout = "find_parcel_page", isDefault = false)
+class FindParcelActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
 
@@ -26,21 +26,10 @@ class FindParcelActivity :  BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.find_parcel_page)
-
-        // Configuration du bouton Home
-        findViewById<ImageButton>(R.id.home_button).setOnClickListener {
-            navigationService.navigate(this, "home")
-        }
+        // Plus besoin d'appeler setContentView, géré par BaseActivity
 
         // Configuration de la barre de recherche
         val searchEditText = findViewById<EditText>(R.id.search_parcels)
-        val searchButton = findViewById<ImageButton>(R.id.search_button)
-
-        searchButton.setOnClickListener {
-            performSearch(searchEditText.text.toString())
-        }
-
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch(searchEditText.text.toString())
@@ -58,7 +47,17 @@ class FindParcelActivity :  BaseActivity() {
         }
 
         recyclerView.adapter = adapter
+    }
 
+    @OnClick("home_button")
+    fun navigateToHome() {
+        navigationService.navigate(this, "home")
+    }
+
+    @OnClick("search_button")
+    fun onSearchButtonClick() {
+        val searchEditText = findViewById<EditText>(R.id.search_parcels)
+        performSearch(searchEditText.text.toString())
     }
 
     private fun performSearch(query: String) {

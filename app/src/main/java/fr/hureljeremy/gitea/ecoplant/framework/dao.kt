@@ -1,5 +1,6 @@
 package fr.hureljeremy.gitea.ecoplant.framework
 
+
 import android.content.Context
 import android.net.Uri
 import androidx.room.ColumnInfo
@@ -12,10 +13,23 @@ import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import fr.hureljeremy.gitea.ecoplant.R
 import java.io.File
 import java.io.FileOutputStream
 
+class Converters {
+    @TypeConverter
+    fun fromString(value: String?): Uri? {
+        return value?.let { Uri.parse(it) }
+    }
+
+    @TypeConverter
+    fun uriToString(uri: Uri?): String? {
+        return uri?.toString()
+    }
+}
 
 @Entity(
     tableName = "plant_score",
@@ -81,8 +95,6 @@ data class ParcelWithResults(
 )
 
 
-
-
 @Dao
 interface ServiceDao {
     @Query("SELECT * FROM plant_score")
@@ -110,13 +122,17 @@ interface ServiceDao {
     fun getPublicParcels(): List<ParcelItem>
 
 
-
-
-
-
 }
 
-@Database(entities = [ServiceEntry::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        ServiceEntry::class,
+        SavedIdentificationResult::class,
+        ParcelItem::class,
+        ParcelItemResultCrossRef::class
+    ], version = 1, exportSchema = true
+)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun serviceDao(): ServiceDao
 

@@ -1,26 +1,29 @@
 package fr.hureljeremy.gitea.ecoplant.models
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.R
+import fr.hureljeremy.gitea.ecoplant.databinding.HistoryItemBinding
 
-class HistoryAdapter(private val historyItems: List<HistoryItem>, private val onItemClick: ((HistoryItem) -> Unit)? = null) :
+class HistoryAdapter(
+    private val historyItems: List<HistoryItem>,
+    private val onItemClick: ((HistoryItem) -> Unit)? = null
+) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
-    RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title: TextView = itemView.findViewById(R.id.history_title)
-        val image: ImageView = itemView.findViewById(R.id.history_image)
+    class ViewHolder(binding: HistoryItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        val title = binding.historyTitle
+        val image = binding.historyImage
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.history_item, parent, false)
-        return ViewHolder(view)
+        val binding = HistoryItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -36,7 +39,7 @@ class HistoryAdapter(private val historyItems: List<HistoryItem>, private val on
         }
 
         holder.itemView.setOnClickListener {
-            onItemClick?.invoke(item) // Appel du callback avec l'élément cliqué
+            onItemClick?.invoke(item)
         }
     }
 

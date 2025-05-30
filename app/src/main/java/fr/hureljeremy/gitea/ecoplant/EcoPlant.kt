@@ -12,7 +12,7 @@ class EcoPlant : Application() {
         Log.d("EcoPlant", "Application started")
         ServiceLocator.getInstance().initialize(
             this,
-            "fr.hureljeremy.gitea.ecoplant.services",  // Add the correct package where NavigationService is located
+            "fr.hureljeremy.gitea.ecoplant.services",
             "fr.hureljeremy.gitea.ecoplant.framework"
         )
         NavigationManager.initialize(this, "fr.hureljeremy.gitea.ecoplant")

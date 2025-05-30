@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -18,7 +19,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.services.CameraService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
-@Page(route = "scanner", isDefault = false)
+@Page(route = "scanner", layout = "scanner_page", isDefault = false)
 class ScannerActivity : BaseActivity() {
     @Inject
     lateinit var navigationService: NavigationService
@@ -46,7 +47,7 @@ class ScannerActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.scanner_page)
+
         previewView = findViewById(R.id.preview_view)
         capturedImageView = findViewById(R.id.captured_image_view)
         checkCameraPermission()
@@ -57,9 +58,9 @@ class ScannerActivity : BaseActivity() {
         if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
             val imageUri = data?.data
             if (imageUri != null) {
-                // Stocke l’URI dans CameraService pour réutilisation
+                // Stocke l'URI dans CameraService pour réutilisation
                 cameraService.setLastImageUri(imageUri)
-                // Affiche l’image sélectionnée dans l’ImageView
+                // Affiche l'image sélectionnée dans l'ImageView
                 capturedImageView.setImageURI(imageUri)
                 previewView.visibility = View.GONE
                 capturedImageView.visibility = View.VISIBLE
@@ -91,7 +92,6 @@ class ScannerActivity : BaseActivity() {
         }
     }
 
-
     private fun startCamera() {
         cameraService.initializeCamera(this, previewView)
     }
@@ -109,5 +109,9 @@ class ScannerActivity : BaseActivity() {
             capturedImageView.visibility = View.GONE
             isShowingCapturedImage = false
         }
+    }
+
+    fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }

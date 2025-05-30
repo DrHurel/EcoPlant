@@ -4,22 +4,22 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 
 @Target(AnnotationTarget.CLASS)
 annotation class Page(
     val route: String,
+    val layout : String,
     val isDefault: Boolean = false
 )
 
-@Target(AnnotationTarget.CLASS)
-annotation class NavigationProvider
-
 class NavigationManager private constructor() {
-    private val routes = mutableMapOf<String, Class<out Activity>>()
+    private data class PageInfo(
+        val activityClass: Class<out Activity>,
+        val layoutResName: String
+    )
+
+    private val routes = mutableMapOf<String, PageInfo>()
     private var defaultRoute: String? = null
     private var currentActivity: Activity? = null
 
@@ -40,7 +40,6 @@ class NavigationManager private constructor() {
         }
     }
 
-
     private fun scanForPages(packageName: String) {
         try {
             val context = applicationContext ?: return
@@ -54,7 +53,11 @@ class NavigationManager private constructor() {
                     val activityClass = Class.forName(activityInfo.name)
                     val pageAnnotation = activityClass.getAnnotation(Page::class.java)
                     if (pageAnnotation != null) {
-                        registerPage(pageAnnotation.route, activityClass as Class<out Activity>)
+                        registerPage(
+                            pageAnnotation.route,
+                            activityClass as Class<out Activity>,
+                            pageAnnotation.layout
+                        )
                         if (pageAnnotation.isDefault) {
                             defaultRoute = pageAnnotation.route
                         }
@@ -68,16 +71,16 @@ class NavigationManager private constructor() {
         }
     }
 
-    fun registerPage(route: String, activityClass: Class<out Activity>) {
-        routes[route] = activityClass
+    fun registerPage(route: String, activityClass: Class<out Activity>, layoutName: String) {
+        routes[route] = PageInfo(activityClass, layoutName)
     }
 
     fun navigate(context: Context, route: String, bundle: Bundle? = null) {
-        val activityClass = routes[route] ?: run {
+        val pageInfo = routes[route] ?: run {
             throw IllegalArgumentException("No activity found for route: $route")
         }
 
-        val intent = Intent(context, activityClass).apply {
+        val intent = Intent(context, pageInfo.activityClass).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             bundle?.let { putExtras(it) }
         }
@@ -94,8 +97,24 @@ class NavigationManager private constructor() {
         currentActivity = activity
     }
 
-
     fun getCurrentActivity(): Activity? = currentActivity
+
+    fun getLayoutResourceId(activity: Activity): Int {
+        val route = routes.entries.find { it.value.activityClass == activity.javaClass }?.key
+            ?: throw IllegalStateException("Activity not registered: ${activity.javaClass.name}")
+
+        val layoutName = routes[route]?.layoutResName
+            ?: throw IllegalStateException("No layout found for route: $route")
+
+        val packageName = activity.packageName
+        val layoutId = activity.resources.getIdentifier(layoutName, "layout", packageName)
+
+        if (layoutId == 0) {
+            throw IllegalStateException("Layout resource not found: $layoutName")
+        }
+
+        return layoutId
+    }
 }
 
 abstract class HideAndroidHUD {
@@ -143,23 +162,3 @@ abstract class HideAndroidHUD {
     }
 }
 
-abstract class BaseActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        HideAndroidHUD.hideNavigationBar(this);
-        ServiceLocator.getInstance().injectServices(this)
-        NavigationManager.getInstance().setCurrentActivity(this)
-        //listenerManager.getInstance().findListener(this)
-    }
-
-}
-
-abstract class BaseFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        ServiceLocator.getInstance().injectServices(this)
-        NavigationManager.getInstance().setCurrentActivity(requireActivity())
-        //ListenerManager.getInstance().findListener(this)
-    }
-}
