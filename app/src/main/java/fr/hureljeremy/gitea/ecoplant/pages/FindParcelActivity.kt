@@ -71,10 +71,10 @@ class FindParcelActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val publicParcels = mutableListOf<FindParcelItem>()
-                val iterator = parcelService.getParcels()
+                val parcels = parcelService.getParcels()
 
-                while (iterator.hasNext()) {
-                    val parcel = iterator.next()
+                // Utiliser une boucle for standard au lieu d'un iterator
+                for (parcel in parcels) {
                     if (parcel.isPublic) {
                         publicParcels.add(convertToFindParcelItem(parcel))
                     }
@@ -125,10 +125,9 @@ class FindParcelActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val allParcels = mutableListOf<ParcelItem>()
-                val iterator = parcelService.getParcels()
+                val parcels = parcelService.getParcels()
 
-                while (iterator.hasNext()) {
-                    val parcel = iterator.next()
+                for (parcel in parcels) {
                     if (parcel.isPublic) {
                         allParcels.add(parcel)
                     }

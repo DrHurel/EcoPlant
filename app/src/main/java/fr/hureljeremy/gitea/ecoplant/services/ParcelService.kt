@@ -8,6 +8,8 @@ import fr.hureljeremy.gitea.ecoplant.framework.ParcelItemResultCrossRef
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
 import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 @ServiceProvider
@@ -26,14 +28,15 @@ class ParcelService : BaseService() {
         }
     }
 
-    private fun getDao() = database?.serviceDao() ?: throw IllegalStateException("ParcelService n'est pas initialisé")
+    private fun getDao() =
+        database?.serviceDao() ?: throw IllegalStateException("ParcelService n'est pas initialisé")
 
-    fun loadEditableParcel(id: Int): ParcelItem? {
-        return getDao().getParcelById(id.toLong())?.parcel
+    suspend fun loadEditableParcel(id: Int): ParcelItem? = withContext(Dispatchers.IO) {
+        getDao().getParcelById(id.toLong())?.parcel
     }
 
-    fun updateParcel(parcel: ParcelItem): Boolean {
-        return try {
+    suspend fun updateParcel(parcel: ParcelItem): Boolean = withContext(Dispatchers.IO) {
+        try {
             val dao = getDao()
             val rowsUpdated = if (dao.getParcelById(parcel.id) != null) {
                 dao.updateParcel(parcel)
@@ -47,7 +50,10 @@ class ParcelService : BaseService() {
         }
     }
 
-    fun addIdentificationResult(parcelId: Int, identificationResult: SavedIdentificationResult) {
+    suspend fun addIdentificationResult(
+        parcelId: Int,
+        identificationResult: SavedIdentificationResult
+    ) = withContext(Dispatchers.IO) {
         val dao = getDao()
         dao.insertIdentificationResult(identificationResult)
 
@@ -59,12 +65,13 @@ class ParcelService : BaseService() {
         dao.insertCrossRef(crossRef)
     }
 
-    fun getParcelWithResults(parcelId: Int): ParcelWithResults? {
-        return getDao().getParcelById(parcelId.toLong())
-    }
+    suspend fun getParcelWithResults(parcelId: Int): ParcelWithResults? =
+        withContext(Dispatchers.IO) {
+            getDao().getParcelById(parcelId.toLong())
+        }
 
-    fun getParcels(): Iterator<ParcelItem> {
-        return LazyParcelItemIterator(this)
+    suspend fun getParcels(): List<ParcelItem> = withContext(Dispatchers.IO) {
+        getDao().getAllParcels()
     }
 
     private class LazyParcelItemIterator(private val service: ParcelService) :
@@ -103,8 +110,8 @@ class ParcelService : BaseService() {
         }
     }
 
-    fun deleteParcel(parcel: ParcelItem): Boolean {
-        return try {
+    suspend fun deleteParcel(parcel: ParcelItem): Boolean = withContext(Dispatchers.IO) {
+        try {
             val dao = getDao()
             dao.deleteParcel(parcel)
             true
@@ -112,12 +119,8 @@ class ParcelService : BaseService() {
             false
         }
     }
-
-fun getService(parcel: ParcelItem): List<SavedIdentificationResult> {
-    // Récupérer la parcelle avec ses résultats associés
-    val parcelWithResults = getDao().getParcelById(parcel.id) ?: return emptyList()
-
-    // Retourner la liste des résultats d'identification (services)
-    return parcelWithResults.services
-}
+    suspend fun getService(parcel: ParcelItem): List<SavedIdentificationResult> = withContext(Dispatchers.IO) {
+        val dao = getDao()
+        dao.getIdentificationResultsForParcel(parcel.id)
+    }
 }

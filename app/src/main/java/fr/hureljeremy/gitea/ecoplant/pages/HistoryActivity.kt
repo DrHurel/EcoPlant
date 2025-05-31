@@ -54,16 +54,14 @@ class HistoryActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val historyList = mutableListOf<HistoryItem>()
-                val iterator = parcelService.getParcels()
+               val parcels = parcelService.getParcels()
 
-                while (iterator.hasNext()) {
-                    val parcel = iterator.next()
+                for (parcel in parcels) {
                     val parcelWithResults = parcelService.getParcelWithResults(parcel.id.toInt())
 
                     parcelWithResults?.services?.forEach { result ->
                         historyList.add(HistoryItem(parcel.id, result.species, imageUrl = result.imageUri))
                     }
-
                 }
 
                 withContext(Dispatchers.Main) {

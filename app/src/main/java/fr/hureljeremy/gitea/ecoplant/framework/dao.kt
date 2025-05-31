@@ -16,6 +16,7 @@ import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.Transaction
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.Update
@@ -48,6 +49,7 @@ data class ServiceEntry(
     val culturalCondition: String
 )
 
+// Modifier l'entité pour supprimer la relation
 @Entity(
     tableName = "identification_results",
     primaryKeys = ["species", "date"]
@@ -57,7 +59,18 @@ data class SavedIdentificationResult(
     val date: String,
     val description: String,
     @ColumnInfo(name = "image_uri")
-    val imageUri: Uri,
+    val imageUri: Uri
+    // Suppression de la relation ici
+)
+
+// Créer une classe distincte pour la relation
+data class SavedIdentificationWithServices(
+    @Embedded val identification: SavedIdentificationResult,
+    @Relation(
+        parentColumn = "species",
+        entityColumn = "species"
+    )
+    val services: List<ServiceEntry>
 )
 
 @Entity(
@@ -157,8 +170,27 @@ interface ServiceDao {
     fun deleteCrossRef(crossRef: ParcelItemResultCrossRef): Int
 
     @Query("SELECT * FROM parcel_items LIMIT :batchSize OFFSET :offset")
-    abstract fun getParcelsPaginated(offset: Int, batchSize: Int): List<ParcelItem>
+    fun getParcelsPaginated(offset: Int, batchSize: Int): List<ParcelItem>
+
+    @Transaction
+    @Query("SELECT * FROM identification_results WHERE species = :species AND date = :date")
+    fun getIdentificationWithServices(
+        species: String,
+        date: String
+    ): SavedIdentificationWithServices
+
+    @Query(
+        "SELECT r.* FROM identification_results r " +
+                "JOIN parcel_item_results cr ON r.species = cr.species AND r.date = cr.date " +
+                "WHERE cr.parcelId = :parcelId"
+    )
+    fun getIdentificationResultsForParcel(parcelId: Long): List<SavedIdentificationResult>
+
+    // Ajouter une méthode pour récupérer les services associés à une identification
+    @Query("SELECT * FROM plant_score WHERE species = :species")
+    fun getServicesForSpecies(species: String): List<ServiceEntry>
 }
+
 
 @Database(
     entities = [

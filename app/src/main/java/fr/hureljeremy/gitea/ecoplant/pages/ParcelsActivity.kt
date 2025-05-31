@@ -73,25 +73,20 @@ class ParcelsActivity : BaseActivity() {
                 // Initialiser le service avec le contexte
                 parcelService.initialize(this@ParcelsActivity)
 
-                val parcels = mutableListOf<ParcelItem>()
-                val iterator = parcelService.getParcels()
-
-                while (iterator.hasNext()) {
-                    parcels.add(iterator.next())
-                }
+                // Récupérer directement la liste des parcelles
+                val parcels = parcelService.getParcels()
 
                 withContext(Dispatchers.Main) {
                     parcelItems.clear()
                     parcelItems.addAll(parcels)
-                    adapter.notifyDataSetChanged()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@ParcelsActivity,
-                        "Erreur lors du chargement des parcelles: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                   Toast.makeText(
+                                            this@ParcelsActivity,
+                                            "Erreur lors du chargement des parcelles: ${e.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                 }
             }
         }

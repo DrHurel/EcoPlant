@@ -68,31 +68,30 @@ class DisplayPlantInfoActivity : BaseActivity() {
         loadParcels()
     }
 
-    private fun loadParcels() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val parcels = mutableListOf<ParcelItem>()
-                val iterator = parcelService.getParcels()
+private fun loadParcels() {
+    lifecycleScope.launch(Dispatchers.IO) {
+        try {
+            // Initialiser le service avec le contexte
+            parcelService.initialize(this@DisplayPlantInfoActivity)
 
-                while (iterator.hasNext()) {
-                    parcels.add(iterator.next())
-                }
+            // Récupérer directement la liste des parcelles
+            val parcels = parcelService.getParcels()
 
-                withContext(Dispatchers.Main) {
-                    parcelItems.clear()
-                    parcelItems.addAll(parcels)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@DisplayPlantInfoActivity,
-                        "Erreur lors du chargement des parcelles: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+            withContext(Dispatchers.Main) {
+                parcelItems.clear()
+                parcelItems.addAll(parcels)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@DisplayPlantInfoActivity,
+                    "Erreur lors du chargement des parcelles: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
+}
 
     private fun configureSaveDialog(dialog: Dialog) {
         val spinner = dialog.findViewById<Spinner>(R.id.parcel_spinner)
