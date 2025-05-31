@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.databinding.ParcelsItemBinding
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
 
 class ParcelsAdapter(
     private val parcelItems: List<ParcelItem>,
@@ -38,16 +40,7 @@ class ParcelsAdapter(
 
         holder.parcelTitle.hint = item.title
 
-        // Configurer les services
-        if (item.services.isNotEmpty()) {
-            holder.service1.hint = item.services[0].service
-        }
-        if (item.services.size >= 2) {
-            holder.service2.hint = item.services[1].service
-        }
-        if (item.services.size >= 3) {
-            holder.service3.hint = item.services[2].service
-        }
+
 
         // Configurer le score de fiabilité
         holder.reliabilityScoreInput.hint = item.minimumReliabilityScore.toString()
@@ -57,7 +50,7 @@ class ParcelsAdapter(
 
         // Configurer le RecyclerView d'identification
         val identificationItems = listOf(
-            IdentificationParcelItem(1, "GPS", "43.123, 5.456"),
+            IdentificationParcelItem(1, "GPS", "${item.latitude}, ${item.longitude}"),
             IdentificationParcelItem(2, "Surface", "2500 m²"),
             IdentificationParcelItem(3, "Type", "Verger")
         )

@@ -1,121 +1,191 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
-    import android.app.Dialog
-    import android.os.Bundle
-    import android.view.ViewGroup
-    import android.view.Window
-    import android.widget.Button
-    import android.widget.EditText
-    import android.widget.Toast
-    import androidx.recyclerview.widget.LinearLayoutManager
-    import androidx.recyclerview.widget.RecyclerView
-    import fr.hureljeremy.gitea.ecoplant.R
-    import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
-    import fr.hureljeremy.gitea.ecoplant.framework.Inject
-    import fr.hureljeremy.gitea.ecoplant.framework.OnClick
-    import fr.hureljeremy.gitea.ecoplant.framework.Page
-    import fr.hureljeremy.gitea.ecoplant.models.ParcelItem
-    import fr.hureljeremy.gitea.ecoplant.models.ParcelsAdapter
-    import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import android.app.Dialog
+import android.os.Bundle
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import fr.hureljeremy.gitea.ecoplant.R
+import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
+import fr.hureljeremy.gitea.ecoplant.framework.Inject
+import fr.hureljeremy.gitea.ecoplant.framework.OnClick
+import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
+import fr.hureljeremy.gitea.ecoplant.models.ParcelsAdapter
+import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import fr.hureljeremy.gitea.ecoplant.services.ParcelService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Page(route = "parcels", layout = "parcels_page", isDefault = false)
-    class ParcelsActivity : BaseActivity() {
-        @Inject
-        private lateinit var navigationService: NavigationService
+class ParcelsActivity : BaseActivity() {
+    @Inject
+    private lateinit var navigationService: NavigationService
 
-        private lateinit var recyclerView: RecyclerView
-        private lateinit var adapter: ParcelsAdapter
+    @Inject
+    private lateinit var parcelService: ParcelService
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ParcelsAdapter
+    private val parcelItems = mutableListOf<ParcelItem>()
 
-            recyclerView = findViewById(R.id.parcels_recycler_view)
-            recyclerView.layoutManager = LinearLayoutManager(this)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-            val parcelItems = createSampleData()
-            adapter = ParcelsAdapter(parcelItems) { item ->
-                Toast.makeText(this, "Parcelle sélectionnée : ${item.title}", Toast.LENGTH_SHORT).show()
-            }
-            recyclerView.adapter = adapter
+        recyclerView = findViewById(R.id.parcels_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        adapter = ParcelsAdapter(parcelItems) { item ->
+            Toast.makeText(this, "Parcelle sélectionnée : ${item.title}", Toast.LENGTH_SHORT).show()
         }
+        recyclerView.adapter = adapter
 
-        @OnClick("home_button")
-        fun navigateToHome() {
-            navigationService.navigate(this, "home")
-        }
+        loadParcels()
+    }
 
-        @OnClick("add_parcel_button")
-        fun popupCreateParcel(){
-            val dialog = createSaveDialog()
-            configureSaveDialog(dialog)
-            showDialog(dialog)
-        }
+    private fun loadParcels() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // Initialiser le service avec le contexte
+                parcelService.initialize(this@ParcelsActivity)
 
-        private fun createSampleData(): List<ParcelItem> {
-            return listOf(
-                ParcelItem(1, "Parcelle A", listOf(), 70.0, true),
-                ParcelItem(2, "Parcelle B", listOf(), 50.0, false),
-                ParcelItem(3, "Parcelle C", listOf(), 60.0, true),
-                ParcelItem(4, "Parcelle D", listOf(), 80.0, false)
-            )
-        }
+                val parcels = mutableListOf<ParcelItem>()
+                val iterator = parcelService.getParcels()
 
-        private fun createSaveDialog(): Dialog {
-            val dialog = Dialog(this)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.create_parcel_alert)
-            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-            return dialog
-        }
-
-        private fun configureSaveDialog(dialog: Dialog) {
-            val parcelNameField = dialog.findViewById<EditText>(R.id.parcel_name)
-            val visibilitySwitch = dialog.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.visibility_switch)
-            val coordinatesField = dialog.findViewById<EditText>(R.id.parcel_coordinates)
-
-
-            dialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
-                dialog.dismiss()
-            }
-
-            dialog.findViewById<Button>(R.id.confirm_button).setOnClickListener {
-                val parcelName = parcelNameField.text.toString()
-                val isPublic = visibilitySwitch.isChecked
-                val coordinates = coordinatesField.text.toString()
-
-                if (parcelName.isEmpty()) {
-                    parcelNameField.error = "Veuillez entrer un nom de parcelle"
-                    return@setOnClickListener
+                while (iterator.hasNext()) {
+                    parcels.add(iterator.next())
                 }
 
-                if (coordinates.isEmpty()) {
-                    coordinatesField.error = "Veuillez entrer des coordonnées"
-                    return@setOnClickListener
+                withContext(Dispatchers.Main) {
+                    parcelItems.clear()
+                    parcelItems.addAll(parcels)
+                    adapter.notifyDataSetChanged()
                 }
-
-                val visibilityText = if (isPublic) "publique" else "privée"
-
-                Toast.makeText(
-                    this,
-                    "Votre parcelle \"$parcelName\" ($coordinates) a bien été créée en visibilité $visibilityText",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                dialog.dismiss()
-            }
-        }
-
-        private fun showDialog(dialog: Dialog) {
-            dialog.show()
-
-            val displayMetrics = resources.displayMetrics
-            val width = (displayMetrics.widthPixels * 0.95).toInt()
-            dialog.window?.apply {
-                setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
-                setGravity(android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.CENTER_VERTICAL)
-                attributes = attributes.apply {
-                    y = (displayMetrics.heightPixels * 0.05).toInt()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ParcelsActivity,
+                        "Erreur lors du chargement des parcelles: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
     }
+
+    @OnClick("home_button")
+    fun navigateToHome() {
+        navigationService.navigate(this, "home")
+    }
+
+    @OnClick("add_parcel_button")
+    fun popupCreateParcel() {
+        val dialog = createSaveDialog()
+        configureSaveDialog(dialog)
+        showDialog(dialog)
+    }
+
+    private fun createSaveDialog(): Dialog {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.create_parcel_alert)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        return dialog
+    }
+
+    private fun configureSaveDialog(dialog: Dialog) {
+        val parcelNameField = dialog.findViewById<EditText>(R.id.parcel_name)
+        val visibilitySwitch = dialog.findViewById<SwitchCompat>(R.id.visibility_switch)
+        val coordinatesField = dialog.findViewById<EditText>(R.id.parcel_coordinates)
+
+        dialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.findViewById<Button>(R.id.confirm_button).setOnClickListener {
+            val parcelName = parcelNameField.text.toString()
+            val isPublic = visibilitySwitch.isChecked
+            val coordinates = coordinatesField.text.toString()
+
+            if (parcelName.isEmpty()) {
+                parcelNameField.error = "Veuillez entrer un nom de parcelle"
+                return@setOnClickListener
+            }
+
+            if (coordinates.isEmpty()) {
+                coordinatesField.error = "Veuillez entrer des coordonnées"
+                return@setOnClickListener
+            }
+
+            saveNewParcel(parcelName, isPublic, coordinates)
+            dialog.dismiss()
+        }
+    }
+
+private fun saveNewParcel(name: String, isPublic: Boolean, coordinates: String) {
+    lifecycleScope.launch(Dispatchers.IO) {
+        try {
+            // Initialiser explicitement le service avant de l'utiliser
+            parcelService.initialize(this@ParcelsActivity)
+
+            val newParcel = ParcelItem(
+                id = 0,
+                title = name,
+                minimumReliabilityScore = 50.0,
+                isPublic = isPublic,
+                latitude = coordinates.split(",").getOrNull(0)?.trim() ?: "",
+                longitude = coordinates.split(",").getOrNull(1)?.trim() ?: ""
+            )
+            val success = parcelService.updateParcel(newParcel)
+
+            withContext(Dispatchers.Main) {
+                if (success) {
+                    Toast.makeText(
+                        this@ParcelsActivity,
+                        "Votre parcelle \"$name\" a bien été créée en visibilité ${if (isPublic) "publique" else "privée"}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    loadParcels()
+                } else {
+                    Toast.makeText(
+                        this@ParcelsActivity,
+                        "Erreur lors de la création de la parcelle",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@ParcelsActivity,
+                    "Erreur lors de la création de la parcelle: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+}
+    private fun showDialog(dialog: Dialog) {
+        dialog.show()
+
+        val displayMetrics = resources.displayMetrics
+        val width = (displayMetrics.widthPixels * 0.95).toInt()
+        dialog.window?.apply {
+            setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+            setGravity(Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL)
+            attributes = attributes.apply {
+                y = (displayMetrics.heightPixels * 0.05).toInt()
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package fr.hureljeremy.gitea.ecoplant.services
 
+import android.content.Context
 import fr.hureljeremy.gitea.ecoplant.framework.AppDatabase
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
@@ -7,18 +8,33 @@ import fr.hureljeremy.gitea.ecoplant.framework.ParcelItemResultCrossRef
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
 import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
+import java.util.concurrent.atomic.AtomicBoolean
 
 @ServiceProvider
 class ParcelService : BaseService() {
-    private val database by lazy { AppDatabase.getInstance(this) }
-    private val dao by lazy { database.serviceDao() }
+    private var database: AppDatabase? = null
+    private var initialized = AtomicBoolean(false)
+
+    override fun onCreate() {
+        super.onCreate()
+        initialize(this)
+    }
+
+    fun initialize(context: Context) {
+        if (initialized.compareAndSet(false, true)) {
+            database = AppDatabase.getInstance(context)
+        }
+    }
+
+    private fun getDao() = database?.serviceDao() ?: throw IllegalStateException("ParcelService n'est pas initialisé")
 
     fun loadEditableParcel(id: Int): ParcelItem? {
-        return dao.getParcelById(id.toLong())?.parcel
+        return getDao().getParcelById(id.toLong())?.parcel
     }
 
     fun updateParcel(parcel: ParcelItem): Boolean {
         return try {
+            val dao = getDao()
             val rowsUpdated = if (dao.getParcelById(parcel.id) != null) {
                 dao.updateParcel(parcel)
             } else {
@@ -32,10 +48,9 @@ class ParcelService : BaseService() {
     }
 
     fun addIdentificationResult(parcelId: Int, identificationResult: SavedIdentificationResult) {
-        // Étape 1: Sauvegarder le résultat d'identification
+        val dao = getDao()
         dao.insertIdentificationResult(identificationResult)
 
-        // Étape 2: Créer une association via ParcelItemResultCrossRef
         val crossRef = ParcelItemResultCrossRef(
             parcelId = parcelId.toLong(),
             species = identificationResult.species,
@@ -45,7 +60,7 @@ class ParcelService : BaseService() {
     }
 
     fun getParcelWithResults(parcelId: Int): ParcelWithResults? {
-        return dao.getParcelById(parcelId.toLong())
+        return getDao().getParcelById(parcelId.toLong())
     }
 
     fun getParcels(): Iterator<ParcelItem> {
@@ -67,7 +82,7 @@ class ParcelService : BaseService() {
         private fun loadNextBatch() {
             if (!hasMoreData) return
 
-            currentBatch = service.dao.getParcelsPaginated(offset, BATCH_SIZE)
+            currentBatch = service.getDao().getParcelsPaginated(offset, BATCH_SIZE)
             currentIndex = 0
             offset += currentBatch.size
             hasMoreData = currentBatch.size == BATCH_SIZE

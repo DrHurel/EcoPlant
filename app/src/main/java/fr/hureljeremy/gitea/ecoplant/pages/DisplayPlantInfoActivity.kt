@@ -1,13 +1,16 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.app.Dialog
+import android.icu.text.DateFormat
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -18,8 +21,11 @@ import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
+import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import fr.hureljeremy.gitea.ecoplant.services.ParcelService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,35 +39,162 @@ class DisplayPlantInfoActivity : BaseActivity() {
     @Inject
     private lateinit var plantNetService: PlantNetService
 
-    private lateinit var plantImageView: android.widget.ImageView
+    @Inject
+    private lateinit var parcelService: ParcelService
 
+    private lateinit var plantImageView: ImageView
     private lateinit var plantNameTextView: TextView
-
     private lateinit var plantDescriptionTextView: TextView
 
     private var plantName: String = "Unknown Plant"
     private var plantDescription: String = "No description available"
+    private var plantImageUri: String? = null
+    private val parcelItems = mutableListOf<ParcelItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         plantImageView = findViewById(R.id.plant_image)
         plantNameTextView = findViewById(R.id.plant_name)
         plantDescriptionTextView = findViewById(R.id.plant_descriptions)
+
         loadPlantData()
         displayPlantInformation()
         fetchPlantServices()
+        loadParcels()
+    }
+
+    private fun loadParcels() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val parcels = mutableListOf<ParcelItem>()
+                val iterator = parcelService.getParcels()
+
+                while (iterator.hasNext()) {
+                    parcels.add(iterator.next())
+                }
+
+                withContext(Dispatchers.Main) {
+                    parcelItems.clear()
+                    parcelItems.addAll(parcels)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@DisplayPlantInfoActivity,
+                        "Erreur lors du chargement des parcelles: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun configureSaveDialog(dialog: Dialog) {
+        val spinner = dialog.findViewById<Spinner>(R.id.parcel_spinner)
+
+        if (parcelItems.isEmpty()) {
+            Toast.makeText(
+                this,
+                "Aucune parcelle disponible. Veuillez en créer une d'abord.",
+                Toast.LENGTH_LONG
+            ).show()
+            dialog.dismiss()
+            navigationService.navigate(this, "parcels")
+            return
+        }
+
+        // Adapter pour afficher les titres des parcelles dans le spinner
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            parcelItems.map { it.title }
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        var selectedParcelPosition = 0
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedParcelPosition = position
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        dialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.findViewById<Button>(R.id.confirm_button).setOnClickListener {
+            if (parcelItems.isNotEmpty() && selectedParcelPosition < parcelItems.size) {
+                val selectedParcel = parcelItems[selectedParcelPosition]
+                saveIdentificationToParcel(selectedParcel.id.toInt())
+                dialog.dismiss()
+            }
+        }
+    }
+
+    private fun saveIdentificationToParcel(parcelId: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // Créer un nouvel objet SavedIdentificationResult
+                val result = plantImageUri?.let {
+                    SavedIdentificationResult(
+                        species = plantName,
+                        date = DateFormat.getDateInstance().format(System.currentTimeMillis())
+                            .toString(),
+                        imageUri = it.toUri(),
+                        description = plantDescription
+                    )
+                }
+
+                // Ajouter le résultat à la parcelle
+                if (result != null) {
+                    parcelService.addIdentificationResult(parcelId, result)
+                } else {
+                    throw IllegalArgumentException("Plant image URI is null")
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@DisplayPlantInfoActivity,
+                        "Identification de $plantName sauvegardée dans la parcelle",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // Navigation optionnelle vers la parcelle ou autre écran
+                    navigationService.navigate(this@DisplayPlantInfoActivity, "home")
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@DisplayPlantInfoActivity,
+                        "Erreur lors de la sauvegarde: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun loadPlantData() {
         plantName = intent.extras?.getString("PLANT_NAME") ?: "Unknown Plant"
         plantDescription =
             intent.extras?.getString("PLANT_DESCRIPTION") ?: "No description available"
+        plantImageUri = intent.extras?.getString("PLANT_IMAGE_URI")
 
-        intent.extras?.getString("PLANT_IMAGE_URI")?.let { uriString ->
+        plantImageUri?.let { uriString ->
             plantImageView.setImageURI(uriString.toUri())
-            plantImageView.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+            plantImageView.scaleType = ImageView.ScaleType.CENTER_CROP
         }
     }
+
 
     private fun displayPlantInformation() {
         plantNameTextView.hint = plantName
@@ -128,38 +261,6 @@ class DisplayPlantInfoActivity : BaseActivity() {
         return dialog
     }
 
-    private fun configureSaveDialog(dialog: Dialog) {
-        val spinner = dialog.findViewById<Spinner>(R.id.parcel_spinner)
-        val parcelles =
-            arrayOf("Parcelle A", "Parcelle B", "Parcelle C", "Parcelle D", "Parcelle E")
-
-        setupSpinnerAdapter(spinner, parcelles)
-
-        var selectedParcel = parcelles[0]
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedParcel = parcelles[position]
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        dialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.findViewById<Button>(R.id.confirm_button).setOnClickListener {
-            Toast.makeText(
-                this, "Plante sauvegardée dans la parcelle: $selectedParcel", Toast.LENGTH_SHORT
-            ).show()
-            dialog.dismiss()
-        }
-    }
 
     private fun setupSpinnerAdapter(spinner: Spinner, parcelles: Array<String>) {
         val adapter = object : ArrayAdapter<String>(this, R.layout.spinner_item, parcelles) {
@@ -190,7 +291,7 @@ class DisplayPlantInfoActivity : BaseActivity() {
         val width = (displayMetrics.widthPixels * 0.95).toInt()
         dialog.window?.apply {
             setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setGravity(android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.CENTER_VERTICAL)
+            setGravity(Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL)
             attributes = attributes.apply {
                 y = (displayMetrics.heightPixels * 0.05).toInt()
             }

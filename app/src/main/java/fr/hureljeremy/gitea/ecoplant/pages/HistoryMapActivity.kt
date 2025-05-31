@@ -13,7 +13,6 @@ import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
-import fr.hureljeremy.gitea.ecoplant.services.MapService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -22,7 +21,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.OverlayItem
 import org.osmdroid.views.overlay.compass.CompassOverlay
-import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 
 @Page(route = "history_map", layout = "history_map_page", isDefault = false)
 class HistoryMapActivity : BaseActivity() {
@@ -30,11 +28,7 @@ class HistoryMapActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
 
-    @Inject
-    private lateinit var mapService: MapService
-
     private lateinit var mapView: MapView
-    private val REQUEST_PERMISSIONS_REQUEST_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +42,14 @@ class HistoryMapActivity : BaseActivity() {
         // Vérifier et demander les permissions
         requestPermissionsIfNecessary(
             arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.INTERNET
+                Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_NETWORK_STATE
             )
         )
 
         // Initialisation de la carte
         mapView = findViewById(R.id.map_view)
+
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
 
@@ -70,12 +64,7 @@ class HistoryMapActivity : BaseActivity() {
         compassOverlay.enableCompass()
         mapView.overlays.add(compassOverlay)
 
-        // Ajouter la possibilité de rotation avec deux doigts
-        val rotationGestureOverlay = RotationGestureOverlay(mapView)
-        rotationGestureOverlay.isEnabled = true
-        mapView.overlays.add(rotationGestureOverlay)
-
-        // Chargement des données mockées (pour éviter le crash)
+        // Afficher des données simulées
         displayMockParcels()
     }
 
@@ -112,8 +101,7 @@ class HistoryMapActivity : BaseActivity() {
         val overlay = ItemizedIconOverlay(items,
             object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem> {
                 override fun onItemSingleTapUp(index: Int, item: OverlayItem): Boolean {
-                    // Afficher les détails de la parcelle
-                    showParcelDetails(item.title)
+                    Log.d("HistoryMapActivity", "Parcelle sélectionnée: ${item.title}")
                     return true
                 }
 
@@ -127,19 +115,18 @@ class HistoryMapActivity : BaseActivity() {
         mapView.invalidate()
     }
 
-    private fun showParcelDetails(parcelTitle: String) {
-        // À implémenter: naviguer vers la page de détails de la parcelle
-        Log.d("HistoryMapActivity", "Parcelle sélectionnée: $parcelTitle")
-    }
-
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
+        if (::mapView.isInitialized) {
+            mapView.onResume()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.onPause()
+        if (::mapView.isInitialized) {
+            mapView.onPause()
+        }
     }
 
     @OnClick("home_button")
@@ -165,7 +152,7 @@ class HistoryMapActivity : BaseActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 permissionsToRequest.toTypedArray(),
-                REQUEST_PERMISSIONS_REQUEST_CODE
+                1
             )
         }
     }

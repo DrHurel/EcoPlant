@@ -68,8 +68,12 @@ data class ParcelItem(
     val id: Long,
     val title: String,
     val minimumReliabilityScore: Double = 50.0,
-    val isPublic: Boolean = false
-)
+    val isPublic: Boolean = false,
+    val latitude: String = "",
+    val longitude: String = "",
+) {
+
+}
 
 @Entity(
     tableName = "parcel_item_results",
