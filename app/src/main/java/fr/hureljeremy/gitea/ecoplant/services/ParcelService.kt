@@ -32,9 +32,6 @@ class ParcelService : BaseService() {
     private fun getDao() =
         database?.serviceDao() ?: throw IllegalStateException("ParcelService n'est pas initialisé")
 
-    suspend fun loadEditableParcel(id: Int): ParcelItem? = withContext(Dispatchers.IO) {
-        getDao().getParcelById(id.toLong())?.parcel
-    }
 
     suspend fun updateParcel(parcel: ParcelItem): Boolean = withContext(Dispatchers.IO) {
         try {

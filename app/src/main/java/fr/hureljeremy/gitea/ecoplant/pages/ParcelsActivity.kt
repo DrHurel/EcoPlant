@@ -82,11 +82,11 @@ class ParcelsActivity : BaseActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                   Toast.makeText(
-                                            this@ParcelsActivity,
-                                            "Erreur lors du chargement des parcelles: ${e.message}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+                    Toast.makeText(
+                        this@ParcelsActivity,
+                        "Erreur lors du chargement des parcelles: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -232,7 +232,7 @@ class ParcelsActivity : BaseActivity() {
     private fun saveNewParcel(name: String, isPublic: Boolean, coordinates: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Initialiser explicitement le service avant de l'utiliser
+
                 parcelService.initialize(this@ParcelsActivity)
 
                 val newParcel = ParcelItem(
@@ -254,6 +254,7 @@ class ParcelsActivity : BaseActivity() {
                         ).show()
 
                         loadParcels()
+                        updateParcelsList(parcelService.getParcels())
                     } else {
                         Toast.makeText(
                             this@ParcelsActivity,
@@ -286,5 +287,11 @@ class ParcelsActivity : BaseActivity() {
                 y = (displayMetrics.heightPixels * 0.05).toInt()
             }
         }
+    }
+
+    fun updateParcelsList(newParcels: List<ParcelItem>) {
+        parcelItems.clear()
+        parcelItems.addAll(newParcels)
+        adapter.notifyDataSetChanged()
     }
 }
