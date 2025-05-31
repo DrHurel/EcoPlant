@@ -24,6 +24,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
 import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
+import fr.hureljeremy.gitea.ecoplant.services.CameraService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 import fr.hureljeremy.gitea.ecoplant.services.ParcelService
 import fr.hureljeremy.gitea.ecoplant.services.PlantNetService
@@ -41,6 +42,9 @@ class DisplayPlantInfoActivity : BaseActivity() {
 
     @Inject
     private lateinit var parcelService: ParcelService
+
+    @Inject
+    private lateinit var cameraService: CameraService
 
     private lateinit var plantImageView: ImageView
     private lateinit var plantNameTextView: TextView
@@ -144,15 +148,16 @@ class DisplayPlantInfoActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Créer un nouvel objet SavedIdentificationResult
-                val result = plantImageUri?.let {
+                val result = cameraService.getLastImageUri()?.let {
                     SavedIdentificationResult(
                         species = plantName,
                         date = DateFormat.getDateInstance().format(System.currentTimeMillis())
                             .toString(),
-                        imageUri = it.toUri(),
+                        imageUri = it,
                         description = plantDescription
                     )
                 }
+
 
                 // Ajouter le résultat à la parcelle
                 if (result != null) {

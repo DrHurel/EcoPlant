@@ -40,19 +40,16 @@ class HistoryAdapter(
 
         // Gestion de l'image
         if (item.imageUrl != null) {
-            try {
-                val imageUri = Uri.parse(item.imageUrl)
-                // Vérifier si l'image existe encore
-                if (isImageExists(imageUri, holder.itemView)) {
-                    holder.image.setImageURI(imageUri)
-                } else {
-                    // Image par défaut si l'image n'existe plus
-                    holder.image.setImageResource(R.drawable.ic_launcher_background)
-                }
-            } catch (e: Exception) {
-                // En cas d'erreur, afficher l'image par défaut
+
+            val imageUri = item.imageUrl
+            // Vérifier si l'image existe encore
+            if (isImageExists(imageUri, holder.itemView)) {
+                holder.image.setImageURI(imageUri)
+            } else {
+                // Image par défaut si l'image n'existe plus
                 holder.image.setImageResource(R.drawable.ic_launcher_background)
             }
+
         } else {
             holder.image.setImageResource(R.drawable.ic_launcher_background)
         }
@@ -72,11 +69,13 @@ class HistoryAdapter(
                     val exists = cursor?.use { it.moveToFirst() && it.count > 0 } ?: false
                     exists
                 }
+
                 "file" -> {
                     // Pour les URI de type file://
                     val file = File(uri.path ?: "")
                     file.exists()
                 }
+
                 else -> false
             }
         } catch (e: Exception) {

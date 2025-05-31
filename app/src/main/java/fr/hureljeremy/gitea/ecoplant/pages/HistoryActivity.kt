@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,8 +61,9 @@ class HistoryActivity : BaseActivity() {
                     val parcelWithResults = parcelService.getParcelWithResults(parcel.id.toInt())
 
                     parcelWithResults?.services?.forEach { result ->
-                        historyList.add(HistoryItem(parcel.id, result.species))
+                        historyList.add(HistoryItem(parcel.id, result.species, imageUrl = result.imageUri))
                     }
+
                 }
 
                 withContext(Dispatchers.Main) {
