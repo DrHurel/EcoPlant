@@ -14,7 +14,6 @@ class MainActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
 
-
     @OnClick("scanner_button")
     fun navigateToScanner() {
         navigationService.navigate(this, "scanner")

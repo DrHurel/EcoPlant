@@ -8,13 +8,19 @@ import android.view.ViewGroup
 import androidx.camera.view.PreviewView
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseFragment
+import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.pages.ScannerActivity
+import fr.hureljeremy.gitea.ecoplant.services.NavigationService
 
 class CameraButtonsFragment : BaseFragment() {
 
     private val scannerActivity: ScannerActivity?
         get() = activity as? ScannerActivity
+
+
+    @Inject
+    private lateinit var navigationService : NavigationService
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +56,7 @@ class CameraButtonsFragment : BaseFragment() {
 
     @OnClick("go_home_button")
     fun onGoHomeClick() {
-        scannerActivity?.navigationService?.navigate(requireContext(), "home")
+        navigationService.navigate(requireContext(), "home")
     }
 
     private fun replaceWithMenuFragment() {

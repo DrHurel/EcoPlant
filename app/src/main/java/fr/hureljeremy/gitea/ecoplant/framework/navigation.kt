@@ -9,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 @Target(AnnotationTarget.CLASS)
 annotation class Page(
     val route: String,
-    val layout : String,
+    val layout: String,
     val isDefault: Boolean = false
 )
 

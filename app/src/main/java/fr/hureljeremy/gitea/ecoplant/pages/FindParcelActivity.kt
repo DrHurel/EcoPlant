@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -20,33 +21,52 @@ class FindParcelActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
 
+
     private lateinit var recyclerView: RecyclerView
+
+    private lateinit var searchEditText: EditText
+
     private lateinit var adapter: FindParcelAdapter
-    private lateinit var allParcelItems: List<FindParcelItem>
+    private val allParcelItems: List<FindParcelItem> by lazy { createSampleData() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Plus besoin d'appeler setContentView, géré par BaseActivity
 
-        // Configuration de la barre de recherche
-        val searchEditText = findViewById<EditText>(R.id.search_parcels)
+        findViewById<View>(android.R.id.content).post {
+            initViews()
+        }
+    }
+
+    private fun initViews() {
+        val rv = findViewById<RecyclerView>(R.id.find_parcels_recycler_view)
+            ?: throw IllegalStateException("RecyclerView non trouvé")
+        recyclerView = rv
+
+        val searchEdit = findViewById<EditText>(R.id.search_parcels)
+            ?: throw IllegalStateException("EditText non trouvé")
+        searchEditText = searchEdit
+
+        setupRecyclerView()
+        setupSearchListener()
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = FindParcelAdapter(allParcelItems) { parcel ->
+            Toast.makeText(this, "Parcelle sélectionnée: ${parcel.name}", Toast.LENGTH_SHORT).show()
+        }
+        recyclerView.adapter = adapter
+    }
+
+    private fun setupSearchListener() {
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch(searchEditText.text.toString())
-                return@setOnEditorActionListener true
+                true
+            } else {
+                false
             }
-            false
         }
-
-        recyclerView = findViewById(R.id.find_parcels_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        allParcelItems = createSampleData()
-        adapter = FindParcelAdapter(allParcelItems) { parcel ->
-            Toast.makeText(this, "Parcelle sélectionnée: ${parcel.name}", Toast.LENGTH_SHORT).show()
-            // Ajouter ici la navigation vers les détails de la parcelle si nécessaire
-        }
-
-        recyclerView.adapter = adapter
     }
 
     @OnClick("home_button")
@@ -56,18 +76,16 @@ class FindParcelActivity : BaseActivity() {
 
     @OnClick("search_button")
     fun onSearchButtonClick() {
-        val searchEditText = findViewById<EditText>(R.id.search_parcels)
         performSearch(searchEditText.text.toString())
     }
 
     private fun performSearch(query: String) {
-        if (query.isEmpty()) {
-            adapter.updateData(allParcelItems)
-            return
-        }
-
-        val filteredList = allParcelItems.filter {
-            it.name.contains(query, ignoreCase = true)
+        val filteredList = if (query.isEmpty()) {
+            allParcelItems
+        } else {
+            allParcelItems.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
         }
         adapter.updateData(filteredList)
     }
@@ -103,7 +121,7 @@ class FindParcelActivity : BaseActivity() {
             FindParcelItem(27, "Parcelle Aquaponique"),
             FindParcelItem(28, "Parcelle Hydroponique"),
             FindParcelItem(29, "Parcelle Permaculture"),
-            FindParcelItem(30, "Parcelle Agroforesterie"),
+            FindParcelItem(30, "Parcelle Agroforesterie")
         )
     }
 }

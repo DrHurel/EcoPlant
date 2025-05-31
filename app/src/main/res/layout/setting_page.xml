@@ -18,260 +18,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginBottom="25dp"
         android:layout_marginHorizontal="25dp"
-        >
+        android:layout_marginBottom="25dp"
+        android:orientation="vertical">
         <!-- Descriptif -->
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:layout_weight="0"
             android:background="@drawable/rounded_background"
-            android:backgroundTint="@color/beige_color"
-            android:layout_marginTop="40dp">
+            android:backgroundTint="@color/beige_color">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="30dp"
-                >
+                android:paddingHorizontal="30dp">
 
-                <!-- Groupe visible quand l'utilisateur EST connecté -->
-                <LinearLayout
-                    android:id="@+id/logged_in_container"
+                <!-- À insérer dans setting_page.xml à la place des trois conteneurs -->
+                <FrameLayout
+                    android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/account"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="35sp"
-                        android:textColorHint="@color/black"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/account"/>
-
-                    <TextView
-                        android:id="@+id/user_name_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:textColorHint="@color/black"
-                        android:textStyle="bold"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/new_user_name"/>
-
-                    <EditText
-                        android:id="@+id/user_name_edit_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:backgroundTintMode="@color/white"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="old user name"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"/>
-
-                    <Button
-                        android:id="@+id/change_user_name_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/change"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/black"
-                        android:layout_marginTop="15dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/yellow_color" />
-
-                    <Button
-                        android:id="@+id/delete_user_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/delete_account"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/light_cream"
-                        android:layout_marginTop="60dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/bordeau_color" />
-                </LinearLayout>
-
-
-                <!-- Groupe visible quand l'utilisateur N'EST PAS connecté -->
-                <LinearLayout
-                    android:id="@+id/login_signup_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/login_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="35sp"
-                        android:textColorHint="@color/black"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/create_account"/>
-
-                    <EditText
-                        android:id="@+id/email_signup"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/email"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:inputType="textEmailAddress"/>
-
-                    <EditText
-                        android:id="@+id/pswd_signup"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/password"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:inputType="textPassword"/>
-
-                    <EditText
-                        android:id="@+id/confirm_pswd_signup"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/confirm_password"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:inputType="textPassword"/>
-
-                    <Button
-                        android:id="@+id/create_account_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/create_account"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/black"
-                        android:layout_marginTop="15dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/yellow_color" />
-
-                    <Button
-                        android:id="@+id/login_account_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/login"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/white"
-                        android:layout_marginTop="20dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/sage_green" />
-                </LinearLayout>
-
-                <!-- Groupe visible pour la connexion à un compte existant -->
-                <LinearLayout
-                    android:id="@+id/login_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/login_account_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="35sp"
-                        android:textColorHint="@color/black"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/login"/>
-
-                    <EditText
-                        android:id="@+id/email_login"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/email"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:inputType="textEmailAddress"
-                        android:imeOptions="actionNext"
-                        android:autofillHints="emailAddress"/>
-
-                    <EditText
-                        android:id="@+id/pswd_login"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_background"
-                        android:fontFamily="@font/joti_one"
-                        android:hint="@string/password"
-                        android:minHeight="48dp"
-                        android:textColorHint="@color/black"
-                        android:textSize="20sp"
-                        android:inputType="textPassword"
-                        android:imeOptions="actionDone"
-                        android:autofillHints="password"/>
-
-                    <Button
-                        android:id="@+id/login_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/login"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/black"
-                        android:layout_marginTop="15dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/yellow_color" />
-
-                    <Button
-                        android:id="@+id/go_to_signup_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/create_account"
-                        android:textSize="25sp"
-                        android:textColorHint="@color/white"
-                        android:layout_marginTop="20dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/joti_one"
-                        android:background="@drawable/rounded_background_low"
-                        android:backgroundTint="@color/sage_green" />
-                </LinearLayout>
-
+                    android:layout_marginTop="40dp"
+                    android:layout_weight="0"
+                    android:background="@drawable/rounded_background"
+                    android:backgroundTint="@color/beige_color"
+                    android:padding="30dp" />
 
             </LinearLayout>
 
@@ -280,11 +55,10 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="25dp"
             android:layout_weight="1"
             android:background="@drawable/rounded_background"
-            android:backgroundTint="@color/beige_color"
-            android:layout_marginTop="25dp">
-
+            android:backgroundTint="@color/beige_color">
 
 
         </FrameLayout>
@@ -294,25 +68,24 @@
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp">
+            android:layout_marginBottom="25dp"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/go_back_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="50dp"
-                android:hint="@string/go_back"
-                android:textSize="35sp"
-                android:textColorHint="@color/black"
-                android:textStyle="bold"
-                android:fontFamily="@font/joti_one"
+                android:layout_weight="1"
                 android:background="@drawable/rounded_background"
-                android:backgroundTint="@color/light_cream" />
-
+                android:backgroundTint="@color/light_cream"
+                android:fontFamily="@font/joti_one"
+                android:hint="@string/go_back"
+                android:textColorHint="@color/black"
+                android:textSize="35sp"
+                android:textStyle="bold" />
 
 
         </LinearLayout>

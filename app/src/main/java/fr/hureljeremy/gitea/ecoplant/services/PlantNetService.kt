@@ -10,7 +10,6 @@ import com.google.firebase.storage.ktx.storage
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.AppDatabase
 import fr.hureljeremy.gitea.ecoplant.framework.BaseService
-import fr.hureljeremy.gitea.ecoplant.framework.IdentificationResult
 import fr.hureljeremy.gitea.ecoplant.framework.Organ
 import fr.hureljeremy.gitea.ecoplant.framework.PlantNetClient
 import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
@@ -36,8 +35,6 @@ class PlantNetService : BaseService() {
         API_KEY = this.resources.getString(R.string.plantnet_api_key)
         client = PlantNetClient("2b10KhKYpR6P3Y4Y29bvfFHG", true)  // temp api key for development
     }
-
-
 
 
     suspend fun identifyPlant(imageUri: Uri, type: Organ): Result<SavedIdentificationResult> {
@@ -81,12 +78,14 @@ class PlantNetService : BaseService() {
                     result.results.firstOrNull()?.species?.commonNames?.firstOrNull()
                         ?: "Unknown plant"
 
-                    Result.success(SavedIdentificationResult(
-                        species = name,
-                        date = System.currentTimeMillis().toString(),
-                        description = description,
-                        imageUri = imageUri
-                    ))
+                    Result.success(
+                        SavedIdentificationResult(
+                            species = name,
+                            date = System.currentTimeMillis().toString(),
+                            description = description,
+                            imageUri = imageUri
+                        )
+                    )
 
                 },
                 onFailure = {
@@ -146,29 +145,29 @@ class PlantNetService : BaseService() {
         val description: String
         fun getPlants(): Iterable<String>
     }
-/*
-    suspend fun getParcelServices(
-        parcelId: String,
-        relability: Double = 0.0
-    ): Result<List<ServiceEntry>> {
-        return withContext(Dispatchers.IO) {
+    /*
+        suspend fun getParcelServices(
+            parcelId: String,
+            relability: Double = 0.0
+        ): Result<List<ServiceEntry>> {
+            return withContext(Dispatchers.IO) {
 
-          ParcelRepository.getParcelById(parcelId).fold(
-                onSuccess = { parcel ->
-                    val plantNames = parcel.getPlants()
-                    val database = AppDatabase.getInstance(applicationContext)
-                    val serviceDao = database.serviceDao()
-                    val services = mutableListOf<ServiceEntry>()
-                    for (plantName in plantNames) {
-                        services.addAll(serviceDao.getBySpecies(plantName, relability))
+              ParcelRepository.getParcelById(parcelId).fold(
+                    onSuccess = { parcel ->
+                        val plantNames = parcel.getPlants()
+                        val database = AppDatabase.getInstance(applicationContext)
+                        val serviceDao = database.serviceDao()
+                        val services = mutableListOf<ServiceEntry>()
+                        for (plantName in plantNames) {
+                            services.addAll(serviceDao.getBySpecies(plantName, relability))
+                        }
+                        Result.success(services)
+                    },
+                    onFailure = { error ->
+                        Log.e("PlantNetService", "Error fetching parcel services", error)
+                        Result.failure(error)
                     }
-                    Result.success(services)
-                },
-                onFailure = { error ->
-                    Log.e("PlantNetService", "Error fetching parcel services", error)
-                    Result.failure(error)
-                }
-            )
-        }
-    }*/
+                )
+            }
+        }*/
 }

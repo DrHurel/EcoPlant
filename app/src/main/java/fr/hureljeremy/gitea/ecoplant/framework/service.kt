@@ -1,12 +1,10 @@
 package fr.hureljeremy.gitea.ecoplant.framework
 
-import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.os.Binder
 import android.os.IBinder
 import dalvik.system.PathClassLoader
 import java.util.Enumeration
@@ -38,17 +36,17 @@ class ServiceLocator private constructor() {
         packages.forEach { packageName ->
             try {
                 val classLoader = Thread.currentThread().contextClassLoader
-                val classes = getClassesInPackage(packageName, classLoader)
-                for (clazz in classes) {
-                    try {
-                        // Utiliser Java reflection pour vérifier l'annotation
-                        val annotation = clazz.getAnnotation(ServiceProvider::class.java)
-                        if (annotation != null) {
-                            registerService(clazz.kotlin)
+                val classes = classLoader?.let { getClassesInPackage(packageName, it) }
+                if (classes != null) {
+                    for (clazz in classes) {
+                        try {
+                            val annotation = clazz.getAnnotation(ServiceProvider::class.java)
+                            if (annotation != null) {
+                                registerService(clazz.kotlin)
+                            }
+                        } catch (e: Exception) {
+                            continue
                         }
-                    } catch (e: Exception) {
-                        // Ignorer les classes qui ne peuvent pas être traitées
-                        continue
                     }
                 }
             } catch (e: Exception) {
@@ -123,7 +121,7 @@ class ServiceLocator private constructor() {
                                     !entryClass.isEnum &&
                                     !entryClass.isSynthetic &&
                                     !entryClass.name.contains("$") &&
-                                    !entryClass.name.endsWith("Kt") // Exclure les fichiers façades Kotlin
+                                    !entryClass.name.endsWith("Kt")
                                 ) {
                                     classes.add(entryClass)
                                 }
@@ -176,39 +174,3 @@ class ServiceLocator private constructor() {
     }
 }
 
-abstract class BaseService : Service() {
-    private val binder = LocalBinder()
-
-    inner class LocalBinder : Binder() {
-        fun getService(): BaseService = this@BaseService
-    }
-
-    override fun onBind(intent: Intent?): IBinder {
-        return binder
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        injectDependencies()
-    }
-
-    private fun injectDependencies() {
-        val serviceClass = this::class
-        for (property in serviceClass.memberProperties) {
-            if (property.hasAnnotation<Inject>()) {
-                property.isAccessible = true
-                val serviceProvider = property.returnType.classifier as? KClass<*> ?: continue
-                val instance =
-                    ServiceLocator.getInstance().getService(serviceProvider as KClass<Any>)
-                try {
-                    (property as? KMutableProperty1<BaseService, Any?>)?.set(this, instance)
-                } catch (e: Exception) {
-                    throw IllegalStateException(
-                        "Failed to inject dependency for property ${property.name}",
-                        e
-                    )
-                }
-            }
-        }
-    }
-}

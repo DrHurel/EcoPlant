@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/login_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="35sp"
+        android:textColorHint="@color/black"
+        android:textStyle="bold"
+        android:fontFamily="@font/joti_one"
+        android:hint="@string/create_account"/>
+
+    <EditText
+        android:id="@+id/email_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background"
+        android:fontFamily="@font/joti_one"
+        android:hint="@string/email"
+        android:minHeight="48dp"
+        android:textColorHint="@color/black"
+        android:textSize="20sp"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/pswd_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background"
+        android:fontFamily="@font/joti_one"
+        android:hint="@string/password"
+        android:minHeight="48dp"
+        android:textColorHint="@color/black"
+        android:textSize="20sp"
+        android:inputType="textPassword"/>
+
+    <EditText
+        android:id="@+id/confirm_pswd_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background"
+        android:fontFamily="@font/joti_one"
+        android:hint="@string/confirm_password"
+        android:minHeight="48dp"
+        android:textColorHint="@color/black"
+        android:textSize="20sp"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/create_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/create_account"
+        android:textSize="25sp"
+        android:textColorHint="@color/black"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/joti_one"
+        android:background="@drawable/rounded_background_low"
+        android:backgroundTint="@color/yellow_color" />
+
+    <Button
+        android:id="@+id/login_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/login"
+        android:textSize="25sp"
+        android:textColorHint="@color/white"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/joti_one"
+        android:background="@drawable/rounded_background_low"
+        android:backgroundTint="@color/sage_green" />
+</LinearLayout>

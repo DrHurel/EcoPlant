@@ -18,7 +18,6 @@ import retrofit2.http.Path
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-// Data Classes (Models)
 data class Status(
     val status: String
 )
@@ -200,7 +199,6 @@ data class QuotaInfo(
     val remaining: Remaining
 )
 
-// Enums
 enum class Language(val code: String) {
     EN("en"), FR("fr"), ES("es"), PT("pt"), DE("de"), IT("it"),
     AR("ar"), CS("cs"), NL("nl"), SK("sk"), ZH("zh"), RU("ru"),
@@ -441,7 +439,6 @@ class PlantNetClient(
             apiService.getQuotaHistory(year, apiKey)
         }
 
-    // Error handling wrapper
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): kotlin.Result<T> {
         return try {
             val response = apiCall()
@@ -458,70 +455,7 @@ class PlantNetClient(
     }
 }
 
-// Custom Exception
 class PlantNetException(
     val code: Int,
     message: String
 ) : Exception("HTTP $code: $message")
-
-// Usage Example
-/*
-class PlantNetUsageExample {
-    private val client = PlantNetClient(
-        apiKey = "your-api-key-here",
-        enableLogging = true
-    )
-
-    suspend fun example() {
-        // Check API status
-        client.checkStatus().fold(
-            onSuccess = { status -> println("API Status: ${status.status}") },
-            onFailure = { error -> println("Error: ${error.message}") }
-        )
-
-        // Get available projects
-        client.getProjects().fold(
-            onSuccess = { projects ->
-                println("Found ${projects.size} projects")
-                projects.forEach { println("- ${it.title}") }
-            },
-            onFailure = { error -> println("Error: ${error.message}") }
-        )
-
-        // Identify plant from URLs
-        val imageUrls = listOf("https://example.com/plant-image.jpg")
-        val organs = listOf(Organ.LEAF)
-
-        client.identifyPlantFromUrls(
-            imageUrls = imageUrls,
-            organs = organs,
-            maxResults = 5
-        ).fold(
-            onSuccess = { result ->
-                println("Best match: ${result.bestMatch}")
-                result.results.forEach { r ->
-                    println("${r.species.scientificName} - Score: ${r.score}")
-                }
-            },
-            onFailure = { error -> println("Identification failed: ${error.message}") }
-        )
-
-        // Identify plant from local files
-        val imageFiles = listOf(File("path/to/plant-photo.jpg"))
-
-        client.identifyPlantFromFiles(
-            imageFiles = imageFiles,
-            organs = listOf(Organ.FLOWER),
-            project = "k-world-flora"
-        ).fold(
-            onSuccess = { result ->
-                println("Identification complete!")
-                result.results.take(3).forEach { r ->
-                    println("${r.species.scientificName}: ${(r.score * 100).toInt()}%")
-                }
-            },
-            onFailure = { error -> println("Error: ${error.message}") }
-        )
-    }
-}
-*/

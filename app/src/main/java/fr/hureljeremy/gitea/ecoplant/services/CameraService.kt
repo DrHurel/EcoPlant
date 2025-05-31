@@ -115,4 +115,11 @@ class CameraService : BaseService() {
         }
         return false
     }
+
+    fun shutdownCamera() {
+        cameraProvider?.unbindAll()
+        imageCapture = null
+        cameraProvider = null
+        Log.d("CameraService", "Camera shutdown")
+    }
 }

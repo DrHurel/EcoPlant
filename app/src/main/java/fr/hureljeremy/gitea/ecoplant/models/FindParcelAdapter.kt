@@ -3,9 +3,7 @@ package fr.hureljeremy.gitea.ecoplant.models
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.databinding.FindParcelItemBinding
-import fr.hureljeremy.gitea.ecoplant.framework.Observer
 
 class FindParcelAdapter(
     private var parcelItems: List<FindParcelItem>,
@@ -26,12 +24,12 @@ class FindParcelAdapter(
         return ViewHolder(binding)
     }
 
-    @Observer("e")
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = parcelItems[position]
         holder.textView.hint = item.name
 
-         holder.itemView.setOnClickListener {
+        holder.itemView.setOnClickListener {
             onItemClick?.invoke(item)
         }
     }
