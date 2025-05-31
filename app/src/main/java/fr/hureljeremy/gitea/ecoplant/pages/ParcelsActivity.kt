@@ -54,9 +54,11 @@ class ParcelsActivity : BaseActivity() {
             },
             onDeleteClick = { item ->
                 deleteParcel(item)
+                updateParcelsList(parcelItems.filter { it.id != item.id })
             },
             onSaveClick = { item, newTitle, newReliabilityScore, isPublic ->
                 updateParcel(item, newTitle, newReliabilityScore, isPublic)
+
             },
             onManageUsersClick = { item ->
                 manageUsers(item)
