@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.R
@@ -14,14 +15,22 @@ import fr.hureljeremy.gitea.ecoplant.framework.Input
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.framework.OnEditorAction
 import fr.hureljeremy.gitea.ecoplant.framework.Page
+import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
 import fr.hureljeremy.gitea.ecoplant.models.FindParcelAdapter
 import fr.hureljeremy.gitea.ecoplant.models.FindParcelItem
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import fr.hureljeremy.gitea.ecoplant.services.ParcelService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Page(route = "find_parcel", layout = "find_parcel_page", isDefault = false)
 class FindParcelActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
+
+    @Inject
+    private lateinit var parcelService: ParcelService
 
     private lateinit var recyclerView: RecyclerView
 
@@ -29,12 +38,16 @@ class FindParcelActivity : BaseActivity() {
     private var query: String = ""
 
     private lateinit var adapter: FindParcelAdapter
-    private val allParcelItems: List<FindParcelItem> by lazy { createSampleData() }
+    private val parcelItems = mutableListOf<FindParcelItem>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        parcelService.initialize(this)
+
         findViewById<View>(android.R.id.content).post {
             initViews()
+            loadPublicParcels()
         }
     }
 
@@ -43,16 +56,52 @@ class FindParcelActivity : BaseActivity() {
             ?: throw IllegalStateException("RecyclerView non trouvé")
         recyclerView = rv
 
-
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = FindParcelAdapter(allParcelItems) { parcel ->
+        adapter = FindParcelAdapter(parcelItems) { parcel ->
             Toast.makeText(this, "Parcelle sélectionnée: ${parcel.name}", Toast.LENGTH_SHORT).show()
         }
         recyclerView.adapter = adapter
+    }
+
+    private fun loadPublicParcels() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val publicParcels = mutableListOf<FindParcelItem>()
+                val iterator = parcelService.getParcels()
+
+                while (iterator.hasNext()) {
+                    val parcel = iterator.next()
+                    if (parcel.isPublic) {
+                        publicParcels.add(convertToFindParcelItem(parcel))
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    parcelItems.clear()
+                    parcelItems.addAll(publicParcels)
+                    adapter.notifyDataSetChanged()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@FindParcelActivity,
+                        "Erreur lors du chargement des parcelles: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun convertToFindParcelItem(parcel: ParcelItem): FindParcelItem {
+        return FindParcelItem(
+            id = parcel.id,
+            name = parcel.title,
+        )
     }
 
     @OnEditorAction(id = "search_parcels", actionId = EditorInfo.IME_ACTION_SEARCH)
@@ -72,48 +121,53 @@ class FindParcelActivity : BaseActivity() {
 
     private fun performSearch(query: String) {
         Log.d("FindParcelActivity", "Performing search with query: $query")
-        val filteredList = if (query.isEmpty()) {
-            allParcelItems
-        } else {
-            allParcelItems.filter {
-                it.name.contains(query, ignoreCase = true)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val allParcels = mutableListOf<ParcelItem>()
+                val iterator = parcelService.getParcels()
+
+                while (iterator.hasNext()) {
+                    val parcel = iterator.next()
+                    if (parcel.isPublic) {
+                        allParcels.add(parcel)
+                    }
+                }
+
+                val filteredParcels = if (query.isEmpty()) {
+                    allParcels
+                } else {
+                    allParcels.filter {
+                        it.title.contains(query, ignoreCase = true) ||
+                                it.latitude.contains(query, ignoreCase = true) ||
+                                it.longitude.contains(query, ignoreCase = true)
+                    }
+                }
+
+                val resultItems = filteredParcels.map { convertToFindParcelItem(it) }
+
+                withContext(Dispatchers.Main) {
+                    parcelItems.clear()
+                    parcelItems.addAll(resultItems)
+                    adapter.notifyDataSetChanged()
+
+                    if (resultItems.isEmpty()) {
+                        Toast.makeText(
+                            this@FindParcelActivity,
+                            "Aucune parcelle trouvée pour \"$query\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@FindParcelActivity,
+                        "Erreur lors de la recherche: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
-        adapter.updateData(filteredList)
-    }
-
-    private fun createSampleData(): List<FindParcelItem> {
-        return listOf(
-            FindParcelItem(1, "Parcelle Potager"),
-            FindParcelItem(2, "Parcelle Verger"),
-            FindParcelItem(3, "Parcelle Fleurs"),
-            FindParcelItem(4, "Parcelle Herbes Aromatiques"),
-            FindParcelItem(5, "Parcelle Jardin Zen"),
-            FindParcelItem(6, "Parcelle Forêt"),
-            FindParcelItem(7, "Parcelle Prairie"),
-            FindParcelItem(8, "Parcelle Vigne"),
-            FindParcelItem(9, "Parcelle Aquatique"),
-            FindParcelItem(10, "Parcelle Montagne"),
-            FindParcelItem(11, "Parcelle Désert"),
-            FindParcelItem(12, "Parcelle Tropicale"),
-            FindParcelItem(13, "Parcelle Arctique"),
-            FindParcelItem(14, "Parcelle Urbain"),
-            FindParcelItem(15, "Parcelle Historique"),
-            FindParcelItem(16, "Parcelle Biodiversité"),
-            FindParcelItem(17, "Parcelle Écologique"),
-            FindParcelItem(18, "Parcelle Communautaire"),
-            FindParcelItem(19, "Parcelle Éducative"),
-            FindParcelItem(20, "Parcelle Récréative"),
-            FindParcelItem(21, "Parcelle Artisanale"),
-            FindParcelItem(22, "Parcelle Scientifique"),
-            FindParcelItem(23, "Parcelle Artistique"),
-            FindParcelItem(24, "Parcelle Sportive"),
-            FindParcelItem(25, "Parcelle Technologique"),
-            FindParcelItem(26, "Parcelle Gastronomique"),
-            FindParcelItem(27, "Parcelle Aquaponique"),
-            FindParcelItem(28, "Parcelle Hydroponique"),
-            FindParcelItem(29, "Parcelle Permaculture"),
-            FindParcelItem(30, "Parcelle Agroforesterie")
-        )
     }
 }

@@ -2,36 +2,46 @@ package fr.hureljeremy.gitea.ecoplant.models
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.databinding.ParcelsItemBinding
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
-import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
+import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
+import fr.hureljeremy.gitea.ecoplant.services.ParcelService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ParcelsAdapter(
     private val parcelItems: List<ParcelItem>,
-    private val onItemClick: ((ParcelItem) -> Unit)? = null
-) :
-    RecyclerView.Adapter<ParcelsAdapter.ViewHolder>() {
-
+    private val parcelService: ParcelService,
+    private val lifecycleScope: LifecycleCoroutineScope,
+    private val onItemClick: ((ParcelItem) -> Unit)? = null,
+    private val onDeleteClick: ((ParcelItem) -> Unit)? = null,
+    private val onSaveClick: ((ParcelItem, String, Double, Boolean) -> Unit)? = null,
+    private val onManageUsersClick: ((ParcelItem) -> Unit)? = null
+) : RecyclerView.Adapter<ParcelsAdapter.ViewHolder>() {
 
     class ViewHolder(binding: ParcelsItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        // Accès direct aux vues via le binding
         val parcelTitle = binding.parcelTitle
+        val reliabilityScoreInput = binding.userNameEditText
+        val visibilitySwitch = binding.visibilitySwitch
+        val deleteButton = binding.deleteButton
+        val saveButton = binding.saveButton
+        val manageUsersButton = binding.manageUsersButton
+        val identificationRecyclerView = binding.identificationParcelsRecyclerView
         val service1 = binding.services1
         val service2 = binding.services2
         val service3 = binding.services3
-        val reliabilityScoreInput = binding.userNameEditText
-        val visibilitySwitch = binding.visibilitySwitch
-        val manageUsersButton = binding.manageUsersButton
-        val deleteButton = binding.deleteButton
-        val saveButton = binding.saveButton
-        val identificationRecyclerView = binding.identificationParcelsRecyclerView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ParcelsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ParcelsItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return ViewHolder(binding)
     }
 
@@ -39,38 +49,76 @@ class ParcelsAdapter(
         val item = parcelItems[position]
 
         holder.parcelTitle.hint = item.title
-
-
-
-        // Configurer le score de fiabilité
         holder.reliabilityScoreInput.hint = item.minimumReliabilityScore.toString()
-
-        // Configurer le switch de visibilité
         holder.visibilitySwitch.isChecked = item.isPublic
 
-        // Configurer le RecyclerView d'identification
-        val identificationItems = listOf(
-            IdentificationParcelItem(1, "GPS", "${item.latitude}, ${item.longitude}"),
-            IdentificationParcelItem(2, "Surface", "2500 m²"),
-            IdentificationParcelItem(3, "Type", "Verger")
-        )
-
-        val identificationAdapter = IdentificationParcelsAdapter(identificationItems)
-        holder.identificationRecyclerView.layoutManager =
-            LinearLayoutManager(holder.itemView.context)
-        holder.identificationRecyclerView.adapter = identificationAdapter
-
         // Configurer les boutons
+        setupButtons(holder, item)
+
+        // Afficher les services par défaut comme vides ou avec un indicateur de chargement
+        holder.service1.hint = "Chargement..."
+        holder.service2.hint = ""
+        holder.service3.hint = ""
+
+        // Charger les données de manière asynchrone
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val services = parcelService.getService(item)
+
+                withContext(Dispatchers.Main) {
+                    updateServicesDisplay(holder, services, item)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    holder.service1.hint = "Erreur de chargement"
+                    holder.service2.hint = ""
+                    holder.service3.hint = ""
+                }
+            }
+        }
+    }
+
+    private fun updateServicesDisplay(
+        holder: ViewHolder,
+        services: List<SavedIdentificationResult>,
+        item: ParcelItem
+    ) {
+        // Ajouter les coordonnées GPS comme premier service si disponibles
+        val displayServices = mutableListOf<String>()
+
+        if (item.latitude.isNotEmpty() && item.longitude.isNotEmpty()) {
+            displayServices.add("GPS: ${item.latitude}, ${item.longitude}")
+        }
+
+        // Ajouter jusqu'à 3 services de la liste
+        services.take(3 - displayServices.size).forEach { result ->
+            displayServices.add(result.species)
+        }
+
+        // Mettre à jour l'affichage des services
+        holder.service1.hint = displayServices.getOrNull(0) ?: ""
+        holder.service2.hint = displayServices.getOrNull(1) ?: ""
+        holder.service3.hint = displayServices.getOrNull(2) ?: ""
+    }
+
+    private fun setupButtons(holder: ViewHolder, item: ParcelItem) {
         holder.manageUsersButton.setOnClickListener {
-            // Action pour gérer les utilisateurs
+            onManageUsersClick?.invoke(item)
         }
 
         holder.deleteButton.setOnClickListener {
-            // Action pour supprimer
+            onDeleteClick?.invoke(item)
         }
 
         holder.saveButton.setOnClickListener {
-            // Action pour sauvegarder
+            val newTitle =
+                holder.parcelTitle.text.toString().ifEmpty { holder.parcelTitle.hint.toString() }
+            val newReliabilityScore = holder.reliabilityScoreInput.text.toString().toDoubleOrNull()
+                ?: holder.reliabilityScoreInput.hint.toString().toDoubleOrNull()
+                ?: 50.0
+            val isPublic = holder.visibilitySwitch.isChecked
+
+            onSaveClick?.invoke(item, newTitle, newReliabilityScore, isPublic)
         }
 
         holder.itemView.setOnClickListener {

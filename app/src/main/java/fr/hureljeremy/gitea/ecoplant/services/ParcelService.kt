@@ -102,4 +102,22 @@ class ParcelService : BaseService() {
             return currentBatch[currentIndex++]
         }
     }
+
+    fun deleteParcel(parcel: ParcelItem): Boolean {
+        return try {
+            val dao = getDao()
+            dao.deleteParcel(parcel)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+fun getService(parcel: ParcelItem): List<SavedIdentificationResult> {
+    // Récupérer la parcelle avec ses résultats associés
+    val parcelWithResults = getDao().getParcelById(parcel.id) ?: return emptyList()
+
+    // Retourner la liste des résultats d'identification (services)
+    return parcelWithResults.services
+}
 }

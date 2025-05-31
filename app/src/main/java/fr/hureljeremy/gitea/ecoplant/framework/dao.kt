@@ -181,10 +181,6 @@ abstract class AppDatabase : RoomDatabase() {
                 val dbFile = File(context.getDatabasePath("score_name.db").path)
 
 
-                if (dbFile.exists()) {// this is for development purposes only should be linked to a version control system
-                    dbFile.delete()
-                }
-
 
                 if (!dbFile.exists()) {
                     copyDbFromRaw(context, R.raw.score_name, dbFile)
