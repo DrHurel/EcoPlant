@@ -154,6 +154,7 @@
                             android:hint="50"
                             android:gravity="center"
                             android:textColorHint="@color/white"
+                            android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:inputType="numberDecimal"
