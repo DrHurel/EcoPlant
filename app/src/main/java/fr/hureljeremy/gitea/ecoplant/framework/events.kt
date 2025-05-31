@@ -27,7 +27,11 @@ annotation class OnClick(val id: String = "")
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class OnEditorAction(val id: String = "", val actionId: Int = EditorInfo.IME_ACTION_DONE)
+annotation class OnEditorAction(
+    val id: String = "",
+    val actionId: Int = EditorInfo.IME_ACTION_DONE,
+    val includeActionSearch: Boolean = false
+)
 
 class EventLocator private constructor() {
     private val TAG = "EventLocator"
@@ -70,7 +74,12 @@ class EventLocator private constructor() {
                 EventType.CLICK -> bindClickEvent(method, target, view)
                 EventType.LONG_CLICK -> bindLongClickEvent(method, target, view)
                 EventType.TEXT_CHANGED -> bindTextChangedEvent(method, target, view)
-                EventType.EDITOR_ACTION -> bindEditorActionEvent(method, target, view, EditorInfo.IME_ACTION_DONE)
+                EventType.EDITOR_ACTION -> bindEditorActionEvent(
+                    method,
+                    target,
+                    view,
+                    EditorInfo.IME_ACTION_DONE
+                )
             }
         }
 
@@ -97,19 +106,34 @@ class EventLocator private constructor() {
                 return@let
             }
 
-            bindEditorActionEvent(method, target, view, annotation.actionId)
+            bindEditorActionEvent(
+                method,
+                target,
+                view,
+                annotation.actionId,
+                annotation.includeActionSearch
+            )
         }
     }
 
-    private fun bindEditorActionEvent(method: Method, target: Any, view: View, actionId: Int) {
+    private fun bindEditorActionEvent(
+        method: Method,
+        target: Any,
+        view: View,
+        actionId: Int,
+        includeActionSearch: Boolean = false
+    ) {
         if (view !is EditText) {
-            Log.w(TAG, "Cannot bind editor action event to non-EditText view: ${view.javaClass.simpleName}")
+            Log.w(
+                TAG,
+                "Cannot bind editor action event to non-EditText view: ${view.javaClass.simpleName}"
+            )
             return
         }
 
         Log.d(TAG, "Binding editor action event for ${method.name} on view id=${view.id}")
         view.setOnEditorActionListener { _, editorActionId, _ ->
-            if (editorActionId == actionId) {
+            if (editorActionId == actionId || (includeActionSearch && editorActionId == EditorInfo.IME_ACTION_SEARCH)) {
                 try {
                     Log.d(TAG, "Editor action event triggered for ${method.name}")
                     invokeMethod(method, target, view)

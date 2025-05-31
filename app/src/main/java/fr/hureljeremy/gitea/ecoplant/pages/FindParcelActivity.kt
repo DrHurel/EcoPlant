@@ -1,6 +1,7 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -10,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
+import fr.hureljeremy.gitea.ecoplant.framework.Input
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
+import fr.hureljeremy.gitea.ecoplant.framework.OnEditorAction
 import fr.hureljeremy.gitea.ecoplant.framework.Page
 import fr.hureljeremy.gitea.ecoplant.models.FindParcelAdapter
 import fr.hureljeremy.gitea.ecoplant.models.FindParcelItem
@@ -24,7 +27,8 @@ class FindParcelActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
 
-    private lateinit var searchEditText: EditText
+    @Input(id = "search_parcels")
+    private var query: String = ""
 
     private lateinit var adapter: FindParcelAdapter
     private val allParcelItems: List<FindParcelItem> by lazy { createSampleData() }
@@ -42,12 +46,8 @@ class FindParcelActivity : BaseActivity() {
             ?: throw IllegalStateException("RecyclerView non trouvé")
         recyclerView = rv
 
-        val searchEdit = findViewById<EditText>(R.id.search_parcels)
-            ?: throw IllegalStateException("EditText non trouvé")
-        searchEditText = searchEdit
 
         setupRecyclerView()
-        setupSearchListener()
     }
 
     private fun setupRecyclerView() {
@@ -58,15 +58,9 @@ class FindParcelActivity : BaseActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun setupSearchListener() {
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                performSearch(searchEditText.text.toString())
-                true
-            } else {
-                false
-            }
-        }
+    @OnEditorAction(id = "search_parcels", actionId = EditorInfo.IME_ACTION_SEARCH)
+    fun onSearchAction() {
+        performSearch(query)
     }
 
     @OnClick("home_button")
@@ -76,10 +70,11 @@ class FindParcelActivity : BaseActivity() {
 
     @OnClick("search_button")
     fun onSearchButtonClick() {
-        performSearch(searchEditText.text.toString())
+        performSearch(query)
     }
 
     private fun performSearch(query: String) {
+        Log.d("FindParcelActivity", "Performing search with query: $query")
         val filteredList = if (query.isEmpty()) {
             allParcelItems
         } else {
