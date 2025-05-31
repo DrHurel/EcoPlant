@@ -1,10 +1,18 @@
 package fr.hureljeremy.gitea.ecoplant.models
 
+import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.R
+import java.io.File
+
+
 import fr.hureljeremy.gitea.ecoplant.databinding.HistoryItemBinding
+
 
 class HistoryAdapter(
     private val historyItems: List<HistoryItem>,
@@ -30,16 +38,49 @@ class HistoryAdapter(
         val item = historyItems[position]
         holder.title.hint = item.name
 
-        // Chargement de l'image (utiliser Glide ou autre bibliothèque)
+        // Gestion de l'image
         if (item.imageUrl != null) {
-            // Si vous utilisez Glide:
-            // Glide.with(holder.image.context).load(item.imageUrl).into(holder.image)
+            try {
+                val imageUri = Uri.parse(item.imageUrl)
+                // Vérifier si l'image existe encore
+                if (isImageExists(imageUri, holder.itemView)) {
+                    holder.image.setImageURI(imageUri)
+                } else {
+                    // Image par défaut si l'image n'existe plus
+                    holder.image.setImageResource(R.drawable.ic_launcher_background)
+                }
+            } catch (e: Exception) {
+                // En cas d'erreur, afficher l'image par défaut
+                holder.image.setImageResource(R.drawable.ic_launcher_background)
+            }
         } else {
             holder.image.setImageResource(R.drawable.ic_launcher_background)
         }
 
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(item)
+        }
+    }
+
+    private fun isImageExists(uri: Uri, view: View): Boolean {
+        return try {
+            when (uri.scheme) {
+                "content" -> {
+                    // Pour les URI de type content://
+                    val context = view.context
+                    val cursor = context.contentResolver.query(uri, null, null, null, null)
+                    val exists = cursor?.use { it.moveToFirst() && it.count > 0 } ?: false
+                    exists
+                }
+                "file" -> {
+                    // Pour les URI de type file://
+                    val file = File(uri.path ?: "")
+                    file.exists()
+                }
+                else -> false
+            }
+        } catch (e: Exception) {
+            false
         }
     }
 
