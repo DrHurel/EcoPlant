@@ -7,6 +7,7 @@ import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItemResultCrossRef
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelWithResults
 import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
+import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 import fr.hureljeremy.gitea.ecoplant.framework.ServiceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -119,8 +120,8 @@ class ParcelService : BaseService() {
             false
         }
     }
-    suspend fun getService(parcel: ParcelItem): List<SavedIdentificationResult> = withContext(Dispatchers.IO) {
+    suspend fun getService(parcel: ParcelItem): List<ServiceEntry> = withContext(Dispatchers.IO) {
         val dao = getDao()
-        dao.getIdentificationResultsForParcel(parcel.id)
+        dao.getParcelServices(parcel.id)
     }
 }

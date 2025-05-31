@@ -186,6 +186,22 @@ interface ServiceDao {
     )
     fun getIdentificationResultsForParcel(parcelId: Long): List<SavedIdentificationResult>
 
+
+    @Transaction
+    fun getParcelServices(parcelId: Long): List<ServiceEntry> {
+
+        val identifications = getIdentificationResultsForParcel(parcelId)
+
+
+        val allServices = mutableListOf<ServiceEntry>()
+        identifications.forEach { identification ->
+            val speciesServices = getServicesForSpecies(identification.species)
+            allServices.addAll(speciesServices)
+        }
+
+        return allServices.groupBy { it.service }.map { it.value.first() }
+    }
+
     // Ajouter une méthode pour récupérer les services associés à une identification
     @Query("SELECT * FROM plant_score WHERE species = :species")
     fun getServicesForSpecies(species: String): List<ServiceEntry>

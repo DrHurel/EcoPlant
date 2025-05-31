@@ -54,7 +54,7 @@ class AuthService : BaseService() {
                 }
             }
     }
-
+    
     fun isLoggedIn(): Boolean {
         auth = FirebaseAuth.getInstance()
         return auth.currentUser != null

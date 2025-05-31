@@ -6,7 +6,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.databinding.ParcelsItemBinding
 import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
-import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
+import fr.hureljeremy.gitea.ecoplant.framework.ServiceEntry
 import fr.hureljeremy.gitea.ecoplant.services.ParcelService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,19 +80,15 @@ class ParcelsAdapter(
 
     private fun updateServicesDisplay(
         holder: ViewHolder,
-        services: List<SavedIdentificationResult>,
+        services: List<ServiceEntry>,
         item: ParcelItem
     ) {
         // Ajouter les coordonnées GPS comme premier service si disponibles
         val displayServices = mutableListOf<String>()
 
-        if (item.latitude.isNotEmpty() && item.longitude.isNotEmpty()) {
-            displayServices.add("GPS: ${item.latitude}, ${item.longitude}")
-        }
-
         // Ajouter jusqu'à 3 services de la liste
         services.take(3 - displayServices.size).forEach { result ->
-            displayServices.add(result.species)
+            displayServices.add(result.service)
         }
 
         // Mettre à jour l'affichage des services
