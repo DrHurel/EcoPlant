@@ -6,15 +6,19 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.Update
 import fr.hureljeremy.gitea.ecoplant.R
 import java.io.File
 import java.io.FileOutputStream
@@ -121,7 +125,35 @@ interface ServiceDao {
     @Query("SELECT * FROM parcel_items WHERE isPublic = 1")
     fun getPublicParcels(): List<ParcelItem>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertParcel(parcel: ParcelItem): Long
 
+    @Update
+    fun updateParcel(parcel: ParcelItem): Int
+
+    @Delete
+    fun deleteParcel(parcel: ParcelItem): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertIdentificationResult(result: SavedIdentificationResult)
+
+    @Update
+    fun updateIdentificationResult(result: SavedIdentificationResult): Int
+
+    @Delete
+    fun deleteIdentificationResult(result: SavedIdentificationResult): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCrossRef(crossRef: ParcelItemResultCrossRef)
+
+    @Query("SELECT * FROM parcel_item_results WHERE parcelId = :parcelId")
+    fun getCrossRefsByParcelId(parcelId: Long): List<ParcelItemResultCrossRef>
+
+    @Delete
+    fun deleteCrossRef(crossRef: ParcelItemResultCrossRef): Int
+
+    @Query("SELECT * FROM parcel_items LIMIT :batchSize OFFSET :offset")
+    abstract fun getParcelsPaginated(offset: Int, batchSize: Int): List<ParcelItem>
 }
 
 @Database(

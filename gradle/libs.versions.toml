@@ -28,6 +28,9 @@ material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 firebaseAuthKtx = "23.2.1"
+osmdroidAndroid = "6.1.17"
+osmdroidMapsforge = "6.1.17"
+osmdroidWms = "6.1.17"
 roomCompiler = "2.7.1"
 roomCommonJvm = "2.7.1"
 roomRuntime = "2.7.1"
@@ -69,6 +72,9 @@ androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview"
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+osmdroid-wms = { module = "org.osmdroid:osmdroid-wms", version.ref = "osmdroidWms" }
+osmdroid-mapsforge = { module = "org.osmdroid:osmdroid-mapsforge", version.ref = "osmdroidMapsforge" }
+osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }

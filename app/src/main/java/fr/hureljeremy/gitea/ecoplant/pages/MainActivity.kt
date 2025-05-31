@@ -26,7 +26,7 @@ class MainActivity : BaseActivity() {
 
     @OnClick("map_button")
     fun navigateToMap() {
-        navigationService.navigate(this, "map")
+        navigationService.navigate(this, "history_map")
     }
 
     @OnClick("settings_button")

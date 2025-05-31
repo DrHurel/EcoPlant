@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,6 @@ class FindParcelActivity : BaseActivity() {
     @Inject
     private lateinit var navigationService: NavigationService
 
-
     private lateinit var recyclerView: RecyclerView
 
     @Input(id = "search_parcels")
@@ -32,7 +30,6 @@ class FindParcelActivity : BaseActivity() {
 
     private lateinit var adapter: FindParcelAdapter
     private val allParcelItems: List<FindParcelItem> by lazy { createSampleData() }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
