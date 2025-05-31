@@ -52,5 +52,8 @@
     <string name="find_parcels">Find Parcels</string>
     <string name="search_parcels">Search parcels</string>
     <string name="search">Search</string>
-    <string name="logout">Logout</string> <!-- Should be replace with a real value store in a secret  -->
+    <string name="logout">Logout</string>
+    <string name="parcel_name">Parcel name :</string>
+    <string name="parcel_coordinate">Parcel coordinate</string>
+    <string name="_43_633881_3_865066">43.633881, 3.865066</string> <!-- Should be replace with a real value store in a secret  -->
 </resources>

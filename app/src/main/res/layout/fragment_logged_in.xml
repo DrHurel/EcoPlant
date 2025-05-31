@@ -64,7 +64,7 @@
         android:backgroundTint="@color/bordeau_color"
         android:fontFamily="@font/joti_one"
         android:hint="@string/logout"
-        android:textColorHint="@color/black"
+        android:textColorHint="@color/light_cream"
         android:textSize="25sp" />
 
     <Button
