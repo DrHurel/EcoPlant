@@ -160,6 +160,7 @@ interface ServiceDao {
     @Delete
     fun deleteIdentificationResult(result: SavedIdentificationResult): Int
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCrossRef(crossRef: ParcelItemResultCrossRef)
 

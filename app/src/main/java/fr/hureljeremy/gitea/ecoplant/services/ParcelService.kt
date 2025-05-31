@@ -124,4 +124,9 @@ class ParcelService : BaseService() {
         val dao = getDao()
         dao.getParcelServices(parcel.id)
     }
+
+    suspend fun getIdentificationParcels(parcel: Long): List<SavedIdentificationResult> =
+        withContext(Dispatchers.IO) {
+            getDao().getIdentificationResultsForParcel(parcel)
+        }
 }

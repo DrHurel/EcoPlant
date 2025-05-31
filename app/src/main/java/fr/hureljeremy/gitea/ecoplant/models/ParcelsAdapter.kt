@@ -78,7 +78,7 @@ class ParcelsAdapter(
         }
     }
 
-    private fun updateServicesDisplay(
+    private suspend fun updateServicesDisplay(
         holder: ViewHolder,
         services: List<ServiceEntry>,
         item: ParcelItem
@@ -95,6 +95,14 @@ class ParcelsAdapter(
         holder.service1.hint = displayServices.getOrNull(0) ?: ""
         holder.service2.hint = displayServices.getOrNull(1) ?: ""
         holder.service3.hint = displayServices.getOrNull(2) ?: ""
+
+        //display identification parcels
+        holder.identificationRecyclerView.adapter = IdentificationParcelsAdapter(
+            parcelService.getIdentificationParcels(item.id),
+            onItemClick = {
+                onItemClick?.invoke(item)
+            }
+        )
     }
 
     private fun setupButtons(holder: ViewHolder, item: ParcelItem) {

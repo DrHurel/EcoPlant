@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.databinding.IdentificationParcelsItemBinding
+import fr.hureljeremy.gitea.ecoplant.framework.SavedIdentificationResult
 
 class IdentificationParcelsAdapter(
-    private val items: List<IdentificationParcelItem>,
-    private val onItemClick: ((IdentificationParcelItem) -> Unit)? = null
+    private val items: List<SavedIdentificationResult>,
+    private val onItemClick: ((SavedIdentificationResult) -> Unit)? = null
 ) : RecyclerView.Adapter<IdentificationParcelsAdapter.ViewHolder>() {
 
     class ViewHolder(binding: IdentificationParcelsItemBinding) :
@@ -26,7 +27,7 @@ class IdentificationParcelsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.textView.hint = "${item.label}: ${item.value}"
+        holder.textView.hint = item.species
 
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(item)
