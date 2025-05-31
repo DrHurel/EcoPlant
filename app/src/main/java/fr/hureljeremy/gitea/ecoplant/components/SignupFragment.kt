@@ -57,7 +57,7 @@ class SignupFragment : BaseFragment() {
             return
         }
 
-        // Création du compte
+
         authService.register(email, password)
         Toast.makeText(context, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
         signupSuccessCallback?.invoke()
@@ -69,13 +69,12 @@ class SignupFragment : BaseFragment() {
     }
 
     private fun validateInputs(): Boolean {
-        // Vérification des champs vides
+
         if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(context, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show()
             return false
         }
 
-        // Vérification de la correspondance des mots de passe
         if (password != confirmPassword) {
             Toast.makeText(context, "Les mots de passe ne correspondent pas", Toast.LENGTH_SHORT)
                 .show()

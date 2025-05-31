@@ -52,15 +52,13 @@ class ParcelsAdapter(
         holder.reliabilityScoreInput.hint = item.minimumReliabilityScore.toString()
         holder.visibilitySwitch.isChecked = item.isPublic
 
-        // Configurer les boutons
+
         setupButtons(holder, item)
 
-        // Afficher les services par défaut comme vides ou avec un indicateur de chargement
         holder.service1.hint = "Chargement..."
         holder.service2.hint = ""
         holder.service3.hint = ""
 
-        // Charger les données de manière asynchrone
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val services = parcelService.getService(item)
@@ -83,20 +81,18 @@ class ParcelsAdapter(
         services: List<ServiceEntry>,
         item: ParcelItem
     ) {
-        // Ajouter les coordonnées GPS comme premier service si disponibles
+
         val displayServices = mutableListOf<String>()
 
-        // Ajouter jusqu'à 3 services de la liste
         services.take(3 - displayServices.size).forEach { result ->
             displayServices.add(result.service)
         }
 
-        // Mettre à jour l'affichage des services
+
         holder.service1.hint = displayServices.getOrNull(0) ?: ""
         holder.service2.hint = displayServices.getOrNull(1) ?: ""
         holder.service3.hint = displayServices.getOrNull(2) ?: ""
 
-        //display identification parcels
         holder.identificationRecyclerView.adapter = IdentificationParcelsAdapter(
             parcelService.getIdentificationParcels(item.id),
             onItemClick = {

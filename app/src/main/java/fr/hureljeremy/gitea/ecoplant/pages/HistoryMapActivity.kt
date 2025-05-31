@@ -59,17 +59,16 @@ class HistoryMapActivity : BaseActivity() {
         val startPoint = GeoPoint(46.603354, 1.888334) // Centre de la France
         mapController.setCenter(startPoint)
 
-        // Ajouter une boussole
+
         val compassOverlay = CompassOverlay(this, mapView)
         compassOverlay.enableCompass()
         mapView.overlays.add(compassOverlay)
 
-        // Afficher des données simulées
+
         displayMockParcels()
     }
 
     private fun displayMockParcels() {
-        // Création de parcelles simulées pour démonstration
         val mockParcels = listOf(
             ParcelItem(1, "Parcelle Forêt", 50.0, true),
             ParcelItem(2, "Champ de Blé", 60.0, true),
@@ -78,27 +77,28 @@ class HistoryMapActivity : BaseActivity() {
             ParcelItem(5, "Parc Naturel", 90.0, false)
         )
 
-        // Initialiser les marqueurs
+
         val items = ArrayList<OverlayItem>()
 
-        // Coordonnées fictives pour démonstration
+
         val centerLat = 46.603354
         val centerLon = 1.888334
 
-        // Ajouter un marqueur pour chaque parcelle
+
         mockParcels.forEach { parcel ->
-            // Simuler des coordonnées autour du centre
+
             val offsetLat = (Math.random() - 0.5) * 5
             val offsetLon = (Math.random() - 0.5) * 10
             val point = GeoPoint(centerLat + offsetLat, centerLon + offsetLon)
 
-            // Créer un marqueur
+
             val item = OverlayItem(parcel.title, "ID: ${parcel.id}", point)
             items.add(item)
         }
 
         // Gérer les clics sur les marqueurs
-        val overlay = ItemizedIconOverlay(items,
+        val overlay = ItemizedIconOverlay(
+            items,
             object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem> {
                 override fun onItemSingleTapUp(index: Int, item: OverlayItem): Boolean {
                     Log.d("HistoryMapActivity", "Parcelle sélectionnée: ${item.title}")

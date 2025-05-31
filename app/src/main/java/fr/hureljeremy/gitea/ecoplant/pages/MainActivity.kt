@@ -1,7 +1,5 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
-import android.os.Bundle
-import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick

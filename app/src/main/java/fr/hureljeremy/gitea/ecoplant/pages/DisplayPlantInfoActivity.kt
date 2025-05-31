@@ -71,10 +71,8 @@ class DisplayPlantInfoActivity : BaseActivity() {
 private fun loadParcels() {
     lifecycleScope.launch(Dispatchers.IO) {
         try {
-            // Initialiser le service avec le contexte
             parcelService.initialize(this@DisplayPlantInfoActivity)
 
-            // Récupérer directement la liste des parcelles
             val parcels = parcelService.getParcels()
 
             withContext(Dispatchers.Main) {
@@ -107,7 +105,6 @@ private fun loadParcels() {
             return
         }
 
-        // Adapter pour afficher les titres des parcelles dans le spinner
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,

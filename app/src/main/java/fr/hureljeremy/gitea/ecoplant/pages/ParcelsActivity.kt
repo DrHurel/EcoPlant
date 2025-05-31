@@ -43,11 +43,10 @@ class ParcelsActivity : BaseActivity() {
         recyclerView = findViewById(R.id.parcels_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-// Uniquement la partie du code qui initialise l'adaptateur
         adapter = ParcelsAdapter(
             parcelItems,
             parcelService,
-            lifecycleScope,  // Ajouter ce paramètre
+            lifecycleScope,
             onItemClick = { item ->
                 Toast.makeText(this, "Parcelle sélectionnée : ${item.title}", Toast.LENGTH_SHORT)
                     .show()
@@ -72,10 +71,10 @@ class ParcelsActivity : BaseActivity() {
     private fun loadParcels() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Initialiser le service avec le contexte
+
                 parcelService.initialize(this@ParcelsActivity)
 
-                // Récupérer directement la liste des parcelles
+
                 val parcels = parcelService.getParcels()
 
                 withContext(Dispatchers.Main) {

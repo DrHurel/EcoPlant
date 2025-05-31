@@ -37,7 +37,7 @@ package fr.hureljeremy.gitea.ecoplant.components
         @OnClick("change_user_name_button")
         fun changeUsername() {
             if (username.isNotEmpty()) {
-                // Ici vous pourriez ajouter un appel à un service pour enregistrer le nom d'utilisateur
+
                 Toast.makeText(context, "Nom d'utilisateur modifié", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "Veuillez entrer un nom d'utilisateur", Toast.LENGTH_SHORT)
@@ -54,8 +54,7 @@ package fr.hureljeremy.gitea.ecoplant.components
 
         @OnClick("delete_user_button")
         fun deleteAccount() {
-            // Appel au service pour supprimer le compte
-            authService.logout() // Déconnexion après suppression
+            authService.logout()
             Toast.makeText(context, "Compte supprimé", Toast.LENGTH_SHORT).show()
             logoutCallback?.invoke()
         }

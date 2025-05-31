@@ -1,17 +1,14 @@
 package fr.hureljeremy.gitea.ecoplant.models
 
+
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.hureljeremy.gitea.ecoplant.R
-import java.io.File
-
-
 import fr.hureljeremy.gitea.ecoplant.databinding.HistoryItemBinding
+import java.io.File
 
 
 class HistoryAdapter(
@@ -63,7 +60,6 @@ class HistoryAdapter(
         return try {
             when (uri.scheme) {
                 "content" -> {
-                    // Pour les URI de type content://
                     val context = view.context
                     val cursor = context.contentResolver.query(uri, null, null, null, null)
                     val exists = cursor?.use { it.moveToFirst() && it.count > 0 } ?: false
@@ -71,7 +67,6 @@ class HistoryAdapter(
                 }
 
                 "file" -> {
-                    // Pour les URI de type file://
                     val file = File(uri.path ?: "")
                     file.exists()
                 }

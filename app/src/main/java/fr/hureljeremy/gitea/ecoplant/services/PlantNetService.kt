@@ -31,7 +31,7 @@ class PlantNetService : BaseService() {
 
     override fun onCreate() {
         super.onCreate()
-        // Access resources through context
+
         API_KEY = this.resources.getString(R.string.plantnet_api_key)
         client = PlantNetClient("2b10KhKYpR6P3Y4Y29bvfFHG", true)  // temp api key for development
     }
@@ -45,7 +45,7 @@ class PlantNetService : BaseService() {
         isIdentifing.set(true)
 
         return try {
-            // Create a temporary file from the content URI
+
             val tempFile = withContext(Dispatchers.IO) {
                 File.createTempFile("plant_image", ".jpg", applicationContext.cacheDir)
             }
@@ -61,7 +61,6 @@ class PlantNetService : BaseService() {
                 maxResults = 1
             )
 
-            // Delete the temporary file
             tempFile.delete()
 
             response.fold(
@@ -133,41 +132,4 @@ class PlantNetService : BaseService() {
         }
     }
 
-
-    interface ParcelRepository {
-        suspend fun getParcels(): Result<List<Parcel>>
-        suspend fun getParcelById(parcelId: String): Result<Parcel>
-    }
-
-    interface Parcel {
-        val id: String
-        val name: String
-        val description: String
-        fun getPlants(): Iterable<String>
-    }
-    /*
-        suspend fun getParcelServices(
-            parcelId: String,
-            relability: Double = 0.0
-        ): Result<List<ServiceEntry>> {
-            return withContext(Dispatchers.IO) {
-
-              ParcelRepository.getParcelById(parcelId).fold(
-                    onSuccess = { parcel ->
-                        val plantNames = parcel.getPlants()
-                        val database = AppDatabase.getInstance(applicationContext)
-                        val serviceDao = database.serviceDao()
-                        val services = mutableListOf<ServiceEntry>()
-                        for (plantName in plantNames) {
-                            services.addAll(serviceDao.getBySpecies(plantName, relability))
-                        }
-                        Result.success(services)
-                    },
-                    onFailure = { error ->
-                        Log.e("PlantNetService", "Error fetching parcel services", error)
-                        Result.failure(error)
-                    }
-                )
-            }
-        }*/
 }

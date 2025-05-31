@@ -17,24 +17,23 @@ class AuthService : BaseService() {
         auth.signInWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, save the token in SharedPreferences
+
                     val user = auth.currentUser
                     user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
                         if (tokenTask.isSuccessful) {
                             token = tokenTask.result?.token
-                            // Save token to SharedPreferences
+
                         }
                     }
                 }
             }
 
-        return Result.success(Unit) // Return success or failure based on the sign-in result
+        return Result.success(Unit)
     }
 
     fun logout() {
         auth.signOut()
         token = null
-        // Remove token from SharedPreferences
     }
 
     fun register(username: String, password: String) {
@@ -43,18 +42,17 @@ class AuthService : BaseService() {
         auth.createUserWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Registration success, save the token in SharedPreferences
+
                     val user = auth.currentUser
                     user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
                         if (tokenTask.isSuccessful) {
                             token = tokenTask.result?.token
-                            // Save token to SharedPreferences
                         }
                     }
                 }
             }
     }
-    
+
     fun isLoggedIn(): Boolean {
         auth = FirebaseAuth.getInstance()
         return auth.currentUser != null
