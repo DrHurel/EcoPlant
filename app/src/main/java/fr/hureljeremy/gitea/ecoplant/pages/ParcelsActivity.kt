@@ -1,14 +1,23 @@
 package fr.hureljeremy.gitea.ecoplant.pages
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +45,14 @@ class ParcelsActivity : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ParcelsAdapter
     private val parcelItems = mutableListOf<ParcelItem>()
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
+
+    private var pendingLocationDialog: Dialog? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -205,7 +222,12 @@ class ParcelsActivity : BaseActivity() {
         val parcelNameField = dialog.findViewById<EditText>(R.id.parcel_name)
         val visibilitySwitch = dialog.findViewById<SwitchCompat>(R.id.visibility_switch)
         val coordinatesField = dialog.findViewById<EditText>(R.id.parcel_coordinates)
+        val getLocationButton = dialog.findViewById<ImageButton>(R.id.get_location_button)
 
+        getLocationButton.setOnClickListener {
+            pendingLocationDialog = dialog
+            requestLocationPermission()
+        }
         dialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             dialog.dismiss()
         }
@@ -295,4 +317,88 @@ class ParcelsActivity : BaseActivity() {
         parcelItems.addAll(newParcels)
         adapter.notifyDataSetChanged()
     }
+
+    private fun requestLocationPermission() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED -> {
+                getLastLocation()
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Toast.makeText(
+                    this,
+                    "La permission de localisation est nécessaire pour obtenir vos coordonnées",
+                    Toast.LENGTH_LONG
+                ).show()
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
+            }
+
+            else -> {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        try {
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            if (location != null) {
+                updateCoordinatesField(location)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Impossible d'obtenir votre position actuelle",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(
+                this,
+                "Erreur lors de l'obtention de la position: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun updateCoordinatesField(location: Location) {
+        pendingLocationDialog?.let { dialog ->
+            val coordinatesField = dialog.findViewById<EditText>(R.id.parcel_coordinates)
+            coordinatesField.setText("${location.latitude}, ${location.longitude}")
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Permission refusée, impossible d'obtenir votre position",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
 }
