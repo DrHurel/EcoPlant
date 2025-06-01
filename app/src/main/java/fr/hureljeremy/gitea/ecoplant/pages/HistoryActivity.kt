@@ -88,6 +88,6 @@ class HistoryActivity : BaseActivity() {
 
     @OnClick("map_button")
     fun navigateToMap() {
-        navigationService.navigate(this, "map")
+        navigationService.navigate(this, "history_map")
     }
 }
