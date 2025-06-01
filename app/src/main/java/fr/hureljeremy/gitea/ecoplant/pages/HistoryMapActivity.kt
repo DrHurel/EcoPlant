@@ -5,21 +5,25 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import fr.hureljeremy.gitea.ecoplant.R
 import fr.hureljeremy.gitea.ecoplant.framework.BaseActivity
 import fr.hureljeremy.gitea.ecoplant.framework.Inject
 import fr.hureljeremy.gitea.ecoplant.framework.OnClick
 import fr.hureljeremy.gitea.ecoplant.framework.Page
-import fr.hureljeremy.gitea.ecoplant.framework.ParcelItem
+import fr.hureljeremy.gitea.ecoplant.services.MapService
 import fr.hureljeremy.gitea.ecoplant.services.NavigationService
+import fr.hureljeremy.gitea.ecoplant.services.ParcelService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.ItemizedIconOverlay
-import org.osmdroid.views.overlay.OverlayItem
 import org.osmdroid.views.overlay.compass.CompassOverlay
 
 @Page(route = "history_map", layout = "history_map_page", isDefault = false)
@@ -27,6 +31,12 @@ class HistoryMapActivity : BaseActivity() {
 
     @Inject
     private lateinit var navigationService: NavigationService
+
+    @Inject
+    private lateinit var parcelService: ParcelService
+
+    @Inject
+    private lateinit var mapService: MapService
 
     private lateinit var mapView: MapView
 
@@ -59,60 +69,58 @@ class HistoryMapActivity : BaseActivity() {
         val startPoint = GeoPoint(46.603354, 1.888334) // Centre de la France
         mapController.setCenter(startPoint)
 
-
         val compassOverlay = CompassOverlay(this, mapView)
         compassOverlay.enableCompass()
         mapView.overlays.add(compassOverlay)
 
-
-        displayMockParcels()
+        // Charger les vraies parcelles
+        loadParcels()
     }
 
-    private fun displayMockParcels() {
-        val mockParcels = listOf(
-            ParcelItem(1, "Parcelle Forêt", 50.0, true),
-            ParcelItem(2, "Champ de Blé", 60.0, true),
-            ParcelItem(3, "Verger", 70.0, false),
-            ParcelItem(4, "Jardin Botanique", 80.0, true),
-            ParcelItem(5, "Parc Naturel", 90.0, false)
-        )
+    private fun loadParcels() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // Initialiser le service de parcelles
+                parcelService.initialize(this@HistoryMapActivity)
 
+                // Récupérer les parcelles réelles
+                val parcels = parcelService.getParcels()
 
-        val items = ArrayList<OverlayItem>()
-
-
-        val centerLat = 46.603354
-        val centerLon = 1.888334
-
-
-        mockParcels.forEach { parcel ->
-
-            val offsetLat = (Math.random() - 0.5) * 5
-            val offsetLon = (Math.random() - 0.5) * 10
-            val point = GeoPoint(centerLat + offsetLat, centerLon + offsetLon)
-
-
-            val item = OverlayItem(parcel.title, "ID: ${parcel.id}", point)
-            items.add(item)
+                withContext(Dispatchers.Main) {
+                    if (parcels.isNotEmpty()) {
+                        // Utiliser le MapService pour configurer les parcelles sur la carte
+                        mapService.configureParcelsOnMap(
+                            this@HistoryMapActivity,
+                            mapView,
+                            parcels
+                        ) { parcel ->
+                            // Callback lors du clic sur un marqueur
+                            Log.d("HistoryMapActivity", "Parcelle sélectionnée: ${parcel.title}")
+                            Toast.makeText(
+                                this@HistoryMapActivity,
+                                "Parcelle: ${parcel.title}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@HistoryMapActivity,
+                            "Aucune parcelle trouvée",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("HistoryMapActivity", "Erreur de chargement des parcelles", e)
+                    Toast.makeText(
+                        this@HistoryMapActivity,
+                        "Erreur lors du chargement des parcelles: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
-
-        // Gérer les clics sur les marqueurs
-        val overlay = ItemizedIconOverlay(
-            items,
-            object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem> {
-                override fun onItemSingleTapUp(index: Int, item: OverlayItem): Boolean {
-                    Log.d("HistoryMapActivity", "Parcelle sélectionnée: ${item.title}")
-                    return true
-                }
-
-                override fun onItemLongPress(index: Int, item: OverlayItem): Boolean {
-                    return false
-                }
-            }, applicationContext
-        )
-
-        mapView.overlays.add(overlay)
-        mapView.invalidate()
     }
 
     override fun onResume() {
