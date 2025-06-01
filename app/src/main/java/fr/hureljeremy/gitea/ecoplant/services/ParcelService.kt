@@ -48,6 +48,17 @@ class ParcelService : BaseService() {
         }
     }
 
+    suspend fun createParcel(parcel: ParcelItem): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val dao = getDao()
+
+            dao.insertParcel(parcel)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun addIdentificationResult(
         parcelId: Int,
         identificationResult: SavedIdentificationResult

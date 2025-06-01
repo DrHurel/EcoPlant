@@ -244,7 +244,7 @@ class ParcelsActivity : BaseActivity() {
                     latitude = coordinates.split(",").getOrNull(0)?.trim() ?: "",
                     longitude = coordinates.split(",").getOrNull(1)?.trim() ?: ""
                 )
-                val success = parcelService.updateParcel(newParcel)
+                val success = parcelService.createParcel(newParcel)
 
                 withContext(Dispatchers.Main) {
                     if (success) {

@@ -12,6 +12,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.Junction
 import androidx.room.OnConflictStrategy
+import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Room
@@ -75,9 +76,9 @@ data class SavedIdentificationWithServices(
 
 @Entity(
     tableName = "parcel_items",
-    primaryKeys = ["id"]
 )
 data class ParcelItem(
+    @PrimaryKey(autoGenerate = true)
     val id: Long,
     val title: String,
     val minimumReliabilityScore: Double = 50.0,
@@ -147,6 +148,7 @@ interface ServiceDao {
 
     @Update
     fun updateParcel(parcel: ParcelItem): Int
+
 
     @Delete
     fun deleteParcel(parcel: ParcelItem): Int
